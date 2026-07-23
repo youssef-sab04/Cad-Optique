@@ -1,0 +1,11 @@
+package cad.project.config;
+
+public class AppConstants {
+
+    public static final String PAGE_NUMBER = "0";
+    public static final String PAGE_SIZE = "10";
+    public static final String SORT_DIR = "asc";
+    public static final String  SORT_BY_NOUN = "nom";
+    public static final int DELAI_RAPPEL_JOURS = 30;
+
+}

@@ -56,21 +56,16 @@ export const NAV_SECTIONS = {
   admin: [
     {
       label: "Aperçu",
-      links: [{ label: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" }],
+      links: [{ label: "Tableau de bord", icon: LayoutDashboard, path: "/admin-dashboard/dash" }],
     },
     {
-      label: "Gestion",
+      label: "Achats",
       links: [
-        { label: "Clients", icon: Users, path: "/responsable-dashboard/clients" },
-        { label: "Stock", icon: Package, path: "/dashboard/stock" },
-        { label: "Devis", icon: FileText, path: "/dashboard/devis" },
-        { label: "Ventes", icon: Receipt, path: "/dashboard/ventes" },
+        { label: "Fournisseurs", icon: Truck, path: "/admin-dashboard/fournisseurs" },
+        { label: "Commandes", icon: ClipboardList, path: "/admin-dashboard/commandes" },
       ],
     },
-    {
-      label: "Suivi",
-      links: [{ label: "Mutuelles", icon: ShieldCheck, path: "/dashboard/mutuelles" }],
-    },
+    
   ],
   responsable: [
     {
@@ -82,17 +77,16 @@ export const NAV_SECTIONS = {
       links: [
         { label: "Clients", icon: Users, path: "/responsable-dashboard/clients" },
         { label: "Examens", icon: ReceiptText, path: "/responsable-dashboard/examens" },
-        { label: "Ordonances", icon: SquarePen, path: "/responsable-dashboard/ordonnance" }, 
-        { label: "Produits", icon: ShoppingCart, path: "/responsable-dashboard/produits" }, 
+        { label: "Ordonances", icon: SquarePen, path: "/responsable-dashboard/ordonnance" },
+        { label: "Produits", icon: ShoppingCart, path: "/responsable-dashboard/produits" },
         { label: "Ventes", icon: Receipt, path: "/responsable-dashboard/ventes" },
         { label: "Devis", icon: FileText, path: "/responsable-dashboard/devis" },
         { label: "Mouvements", icon: Package, path: "/responsable-dashboard/mouvements-stock" },
-        { label: "Fournisseurs", icon: Truck, path: "/responsable-dashboard/fournisseurs" },
-        { label: "Commandes", icon: ClipboardList, path: "/responsable-dashboard/commandes" },
-        { label: "Notications", icon: ShieldAlert, path: "/responsable-dashboard/notifications" },
-
-
       ],
+    },
+    {
+      label: "Suivi",
+      links: [{ label: "Notications", icon: ShieldAlert, path: "/responsable-dashboard/notifications" }],
     },
   ],
 };

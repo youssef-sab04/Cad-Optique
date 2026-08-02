@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineLogin } from "react-icons/ai";
-import { Link , useNavigate , Navigate} from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Spinners from "../shared/Spinners";
 import InputField from "../shared/InputField";
-import { useDispatch , useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authenticateSignInUser } from "../../store/reducers/actions";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 import {
     Glasses
@@ -17,6 +18,7 @@ const LogIn = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
+    const [showPassword, setShowPassword] = useState(false);
 
 
 
@@ -36,7 +38,7 @@ const LogIn = () => {
         dispatch(authenticateSignInUser(data, toast, reset, navigate, setLoader))
     };
 
- console.log(user)
+    console.log(user)
     return (
         <div className="min-h-screen flex flex-col">
             <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -76,16 +78,25 @@ const LogIn = () => {
                             errors={errors}
                         />
 
-                        <InputField
-                            label="Password"
-                            required
-                            id="password"
-                            type="password"
-                            message="*Password is required"
-                            placeholder="Enter your password"
-                            register={register}
-                            errors={errors}
-                        />
+                        <div className="relative">
+                            <InputField
+                                label="Password"
+                                required
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                message="*Password is required"
+                                placeholder="Enter your password"
+                                register={register}
+                                errors={errors}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-9 text-slate-500"
+                            >
+                                {showPassword ? <FiEyeOff /> : <FiEye />}
+                            </button>
+                        </div>
                     </div>
 
                     <button

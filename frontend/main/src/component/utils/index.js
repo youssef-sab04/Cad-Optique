@@ -65,6 +65,10 @@ export const NAV_SECTIONS = {
         { label: "Commandes", icon: ClipboardList, path: "/admin-dashboard/commandes" },
       ],
     },
+    {
+      label: "Équipe",
+      links: [{ label: "Responsables", icon: ShieldCheck, path: "/admin-dashboard/responsables" }],
+    },
     
   ],
   responsable: [

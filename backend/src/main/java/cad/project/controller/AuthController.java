@@ -1,8 +1,12 @@
 package cad.project.controller;
 
+import cad.project.config.AppConstants;
 import cad.project.model.AppRole;
 import cad.project.model.Role;
 import cad.project.model.User;
+import cad.project.playload.CategoryDTO;
+import cad.project.playload.UserDTO;
+import cad.project.playload.UserResponse;
 import cad.project.repositries.RoleRepository;
 import cad.project.repositries.UserRepositry;
 import cad.project.security.jwt.JwtUtils;
@@ -11,6 +15,8 @@ import cad.project.security.request.SignupRequest;
 import cad.project.security.response.MessageResponse;
 import cad.project.security.response.UserInfoResponse;
 import cad.project.security.services.UserDetailsImpl;
+import cad.project.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +49,9 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     PasswordEncoder encoder;
@@ -151,6 +160,44 @@ public class AuthController {
                         cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
     }
+
+    @Operation(summary = "Ajouter un responsable")
+    @PostMapping("/admin/add_responsable")
+    public ResponseEntity<UserDTO> addResponsable(@Valid @RequestBody UserDTO userDTO){
+        UserDTO userDTOSaved = userService.addRespo(userDTO);
+        return new ResponseEntity<>(userDTOSaved, HttpStatus.CREATED);
+    }
+    @Operation(summary = "Get responsables")
+    @GetMapping("/admin/responsables")
+    public ResponseEntity<UserResponse> getAllRespos(
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
+    ){
+        return new ResponseEntity<>(userService.getAllRespos(pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get responsable par id")
+    @GetMapping("/admin/responsables/{userId}")
+    public ResponseEntity<UserDTO> getRespoById(@PathVariable Long userId){
+        return new ResponseEntity<>(userService.getRespoById(userId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Modifier un responsable")
+    @PutMapping("/admin/responsables/{userId}")
+    public ResponseEntity<UserDTO> updateRespo(@Valid @RequestBody UserDTO userDTO,
+                                               @PathVariable Long userId){
+        return new ResponseEntity<>(userService.updateRespo(userId, userDTO), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Supprimer un responsable")
+    @DeleteMapping("/admin/responsables/{userId}")
+    public ResponseEntity<UserDTO> deleteRespo(@PathVariable Long userId){
+        return new ResponseEntity<>(userService.deleteRespo(userId), HttpStatus.OK);
+    }
+
+
 
 
 }

@@ -47,6 +47,8 @@ public class User {
     @Size(max = 120)
     private String cin;
 
+    private String phoneNumber;
+
     @ManyToMany
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

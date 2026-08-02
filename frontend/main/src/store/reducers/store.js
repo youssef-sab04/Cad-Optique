@@ -15,6 +15,7 @@ import {fournisseurReducer} from './fournisseurReducers'
 import  {commandeReducers} from './commandeReducers'
 import  {commandeReducersItems} from './commandeReducersItems'
 import { notificationReducer } from './notificationReducer';
+import { responsableReducer } from './responsableReducers';
 
 
 
@@ -46,7 +47,8 @@ export const store = configureStore({
         fournisseurs :fournisseurReducer,
         commandes : commandeReducers ,
         commandeIt : commandeReducersItems,
-        notifications : notificationReducer
+        notifications : notificationReducer,
+        responsables : responsableReducer,
 
         
 

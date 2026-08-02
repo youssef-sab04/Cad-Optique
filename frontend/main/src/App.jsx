@@ -18,6 +18,7 @@ import Fournisseur from './component/fournisseur/Fournisseur'
 import Commande from './component/commande/Commande'
 import Notification from './component/notification/Notification'
 import Dahsboard from './component/dahsboard/Dahsboard'
+import Responsable from './component/crudResponsable/Responsable'
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
                 <Route path="dash" element={<Dahsboard />} />
                 <Route path="fournisseurs" element={<Fournisseur />} />
                 <Route path="commandes" element={<Commande />} />
+                <Route path="responsables" element={<Responsable />} />
               </Route>
             </Route>
 

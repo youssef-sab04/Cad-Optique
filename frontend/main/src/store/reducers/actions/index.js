@@ -1188,3 +1188,75 @@ export const fetchNotifClients = (queryStrin) => async (dispatch) => {
         });
     }
 };
+
+/// Responsables
+export const fetchResponsables = (queryStrin) => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" });
+        const { data } = await api.get(`/auth/admin/responsables?${queryStrin || ""}`);
+        dispatch({
+            type: "FETCH_RESPONSABLES",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        });
+        dispatch({ type: "IS_SUCCESS" });
+    } catch (error) {
+        console.log(error);
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to fetch responsables",
+        });
+    }
+};
+
+export const addResponsable = (respoData, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        const { data } = await api.post(`/auth/admin/responsable`, respoData);
+        dispatch({ type: "ADD_RESPONSABLE", payload: data });
+        toast.success("Responsable ajouté");
+        reset();
+        setOpen(false);
+        dispatch(fetchResponsables());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de l'ajout");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+
+export const updateResponsable = (id, respoData, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        const { data } = await api.put(`/auth/admin/responsables/${id}`, respoData);
+        dispatch({ type: "UPDATE_RESPONSABLE", payload: data });
+        toast.success("Responsable modifié");
+        reset();
+        setOpen(false);
+        dispatch(fetchResponsables());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de la modification");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+
+export const deleteResponsable = (id, toast, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        await api.delete(`/auth/admin/responsables/${id}`);
+        dispatch({ type: "DELETE_RESPONSABLE", payload: id });
+        toast.success("Responsable supprimé");
+        setOpen(false);
+        dispatch(fetchResponsables());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de la suppression");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+

@@ -1,28 +1,28 @@
 package cad.project.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
+public class FileServiceImp implements FileService {
 
-public class FileServiceImp  implements  FileService{
+    private final Cloudinary cloudinary;
+
+    public FileServiceImp(Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
+    }
+
     @Override
-    public String uploadImage(String path, MultipartFile file) throws IOException {
-        String originalFileName = file.getOriginalFilename();
-        String randomId = UUID.randomUUID().toString();
-        String fileName = randomId + originalFileName.substring(originalFileName.lastIndexOf('.'));
-
-        File folder = new File(path).getAbsoluteFile();
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-
-        File destFile = new File(folder, fileName);
-        file.transferTo(destFile);
-        return fileName;
+    public String uploadImage(MultipartFile file) throws IOException {
+        Map<?, ?> result = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap("folder", "cad-optique/produits")
+        );
+        return result.get("secure_url").toString();
     }
 }

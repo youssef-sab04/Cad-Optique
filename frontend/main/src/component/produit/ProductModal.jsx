@@ -9,9 +9,9 @@ import InputField from "../shared/InputField";
 import { updateProd  ,  addProduct  } from "../../store/reducers/actions";
 
 const SectionCard = ({ icon: Icon, title, children }) => (
-    <div className="col-span-2 border border-slate-200 rounded-xl p-4">
+    <div className="col-span-2 border border-slate-200 rounded-xl p-4 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-blue-200">
         <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 rounded-md bg-blue-50 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-md bg-blue-50 flex items-center justify-center transition-colors duration-300 group-hover:bg-blue-100">
                 <Icon size={14} className="text-blue-600" />
             </div>
             <span className="text-sm font-semibold text-slate-700">{title}</span>
@@ -41,7 +41,7 @@ const ProductModal = ({ open, setOpen, product }) => {
             reset({
                 nom: "", description: "", image: "", code_barre: "",
                 categoryId: "", quantity: "", prixHT: "",
-                discount: "", price: "", marque: "", couleur: "",
+                discount: "", marque: "", couleur: "",
                 modele: "", indice: "", diametre: "", seuilMin: "", traitement: "",
             });
         }
@@ -50,7 +50,7 @@ const ProductModal = ({ open, setOpen, product }) => {
     }, [product, open]);
 
     const onSubmit = (data) => {
-        const { image, ...productData } = data;
+        const { ...productData } = data;
 
         const formData = new FormData();
         formData.append("produit", new Blob([JSON.stringify(productData)], { type: "application/json" }));
@@ -67,12 +67,12 @@ const ProductModal = ({ open, setOpen, product }) => {
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
-            <DialogBackdrop className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+            <DialogBackdrop className="fixed inset-0 bg-black/45 backdrop-blur-sm transition-opacity duration-300" />
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4">
-                    <DialogPanel className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <DialogPanel className="relative bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/70 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
 
-                        <div className="sticky top-0 z-10 bg-slate-900 px-6 py-5 flex items-center justify-between">
+                        <div className="sticky top-0 z-10 bg-slate-900 px-6 py-5 flex items-center justify-between border-b border-slate-700">
                             <div>
                                 <DialogTitle className="text-base font-bold text-white">
                                     {product ? "Modifier le produit" : "Ajouter un produit"}
@@ -81,7 +81,7 @@ const ProductModal = ({ open, setOpen, product }) => {
                                     {product ? `Produit #${product.id}` : "Nouvelle fiche produit"}
                                 </span>
                             </div>
-                            <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+                            <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg p-1.5 transition-all duration-200">
                                 <FaTimes size={16} />
                             </button>
                         </div>
@@ -95,7 +95,7 @@ const ProductModal = ({ open, setOpen, product }) => {
                                     <label htmlFor="categoryId" className="font-semibold text-sm text-slate-700">Catégorie</label>
                                     <select
                                         id="categoryId"
-                                        className={`px-3 py-2.5 border outline-none bg-white text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-900/20 ${errors.categoryId ? "border-red-500" : "border-slate-300 focus:border-blue-900"}`}
+                                        className={`px-3 py-2.5 border outline-none bg-white text-slate-900 rounded-lg transition-all duration-200 hover:border-slate-400 focus:ring-2 focus:ring-blue-900/20 ${errors.categoryId ? "border-red-500" : "border-slate-300 focus:border-blue-900"}`}
                                         {...register("categoryId", { required: { value: true, message: "La catégorie est requise" } })}
                                     >
                                         <option value="">Sélectionner...</option>
@@ -118,7 +118,7 @@ const ProductModal = ({ open, setOpen, product }) => {
                                     <textarea
                                         id="description"
                                         rows={3}
-                                        className="px-3 py-2.5 border border-slate-300 outline-none bg-white text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
+                                        className="px-3 py-2.5 border border-slate-300 outline-none bg-white text-slate-900 rounded-lg transition-all duration-200 hover:border-slate-400 focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
                                         {...register("description")}
                                     />
                                 </div>
@@ -137,10 +137,10 @@ const ProductModal = ({ open, setOpen, product }) => {
                                             setImageFile(file);
                                             if (file) setImagePreview(URL.createObjectURL(file));
                                         }}
-                                        className="text-sm"
+                                        className="text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:font-medium file:text-blue-700 hover:file:bg-blue-100"
                                     />
                                     {imagePreview && (
-                                        <img src={imagePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg mt-2" />
+                                        <img src={imagePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg mt-2 ring-1 ring-slate-200 transition-transform duration-200 hover:scale-105" />
                                     )}
                                 </div>
                             </SectionCard>
@@ -154,13 +154,21 @@ const ProductModal = ({ open, setOpen, product }) => {
 
                             <SectionCard icon={DollarSign} title="Tarification">
                                 <InputField label="Prix HT" id="prixHT" type="number" register={register} errors={errors} required message="Le prix HT est requis" />
-                                <InputField label="Prix" id="price" type="number" register={register} errors={errors} required message="Le prix est requis" />
                                 <InputField label="Remise (%)" id="discount" type="number" register={register} errors={errors} />
                             </SectionCard>
 
-                            <button type="submit" disabled={btnLoader} className="col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition-colors">
+                            <div className="col-span-2 flex items-center gap-3 justify-end pt-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setOpen(false)}
+                                    className="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button type="submit" disabled={btnLoader} className="min-w-36 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 text-white py-2.5 px-5 rounded-lg font-medium transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed">
                                 {btnLoader ? "Enregistrement..." : "Enregistrer"}
-                            </button>
+                                </button>
+                            </div>
                         </form>
                     </DialogPanel>
                 </div>

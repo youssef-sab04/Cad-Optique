@@ -461,13 +461,68 @@ export const fetchCategories = () => async (dispatch) => {
             totalPages: data.totalPages,
             lastPage: data.lastPage,
         });
-        dispatch({ type: "IS_ERROR" });
+        dispatch({ type: "CATEGORY_SUCCESS" });
     } catch (error) {
         console.log(error);
         dispatch({
             type: "IS_ERROR",
             payload: error?.response?.data?.message || "Failed to fetch categories",
         });
+    }
+};
+
+export const addCategory = (categoryData, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        const payload = {
+            ...categoryData,
+            tva: categoryData?.tva === "" || categoryData?.tva == null ? 20 : Number(categoryData.tva),
+        };
+        const { data } = await api.post(`/admin/category`, payload);
+        dispatch({ type: "ADD_CATEGORY", payload: data });
+        toast.success("Catégorie ajoutée");
+        reset({ nom: "", description: "", tva: 20 });
+        setOpen(false);
+        dispatch(fetchCategories());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de l'ajout de la catégorie");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+
+export const updateCategory = (categoryId, categoryData, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        const payload = {
+            ...categoryData,
+            tva: categoryData?.tva === "" || categoryData?.tva == null ? 20 : Number(categoryData.tva),
+        };
+        const { data } = await api.put(`/admin/categorys/${categoryId}`, payload);
+        dispatch({ type: "UPDATE_CATEGORY", payload: data });
+        toast.success("Catégorie modifiée");
+        reset({ nom: "", description: "", tva: 20 });
+        setOpen(false);
+        dispatch(fetchCategories());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de la modification de la catégorie");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+
+export const deleteCategory = (categoryId, toast, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        await api.delete(`/admin/categorys/${categoryId}`);
+        dispatch({ type: "DELETE_CATEGORY", payload: categoryId });
+        toast.success("Catégorie supprimée");
+        setOpen(false);
+        dispatch(fetchCategories());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de la suppression de la catégorie");
+    } finally {
+        setBtnLoader(false);
     }
 };
 

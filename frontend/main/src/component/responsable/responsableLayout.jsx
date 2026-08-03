@@ -22,6 +22,7 @@ export default function DashboardLayout({ role = "admin", userName = "Utilisateu
 
 
     const logOutHandler = () => {
+        console.log("5rg ")
         dispatch(logOutUser(navigate));
     };
 

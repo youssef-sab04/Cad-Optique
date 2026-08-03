@@ -4,7 +4,6 @@ package cad.project.service;
 import cad.project.exceptions.APIException;
 import cad.project.exceptions.ResourceNotFoundException;
 import cad.project.model.Client;
-import cad.project.model.Examen;
 import cad.project.model.OrdonnanceLunette;
 import cad.project.playload.ClientDTO;
 import cad.project.playload.ClientResponse;
@@ -13,7 +12,6 @@ import cad.project.repositries.ClientRepositry;
 import cad.project.repositries.OrdonanceLunetteRepositry;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -40,13 +37,6 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
 
     @Autowired
     private FileServiceImp fileServiceImp;
-
-    @Value("${project.image}")
-    private String path;
-
-    @Value("${image.base.url}")
-    private String imageBaseUrl;
-
 
 
     @Override
@@ -85,7 +75,6 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
         }
     }
 
-    @Override
     public OrdonnanceLunetteDTO addScanOrd(Long clientId , MultipartFile image) throws IOException {
 
         Client client = clientRepositry.findById(clientId)
@@ -93,16 +82,13 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
 
         OrdonnanceLunette ordonnanceLunette = new OrdonnanceLunette();
 
-        String fileName = fileServiceImp.uploadImage(path, image);
-        ordonnanceLunette.setImage(fileName);
+        String imageUrl = fileServiceImp.uploadImage(image);
+        ordonnanceLunette.setImage(imageUrl);
 
         ordonnanceLunette.setClient(client);
         ordonanceLunetteRepositry.save(ordonnanceLunette);
 
         return modelMapper.map(ordonnanceLunette , OrdonnanceLunetteDTO.class);
-    }
-    private String constructImageUrl(String imageName) {
-        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
     }
 
     @Override
@@ -132,7 +118,7 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
         List<OrdonnanceLunetteDTO> ordonnanceLunetteDTOS = ordonnanceLunettes.stream()
                 .map(Ord -> {
                     OrdonnanceLunetteDTO ordonnanceLunetteDTO = modelMapper.map(Ord, OrdonnanceLunetteDTO.class);
-                    ordonnanceLunetteDTO.setImage(constructImageUrl(Ord.getImage()));
+                    ordonnanceLunetteDTO.setImage(Ord.getImage());
                     ordonnanceLunetteDTO.setClientDTO(modelMapper.map(Ord.getClient() , ClientDTO.class));
                     return ordonnanceLunetteDTO;
                 })
@@ -156,8 +142,6 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
     public OrdonnanceLunetteDTO UpdateOrdLun(Long ordonanceId, OrdonnanceLunetteDTO ordonnanceLunetteDTO) {
         OrdonnanceLunette ordonnanceLunetteFromDb = ordonanceLunetteRepositry.findById(ordonanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordonance", "OrdonanceId", ordonanceId));
-
-        OrdonnanceLunette ordonnanceLunette = modelMapper.map(ordonnanceLunetteDTO , OrdonnanceLunette.class);
 
         ordonnanceLunetteFromDb.setPrescripteur(ordonnanceLunetteDTO.getPrescripteur());
         ordonnanceLunetteFromDb.setDateEmission(ordonnanceLunetteDTO.getDateEmission());
@@ -201,8 +185,8 @@ public class OrdonanceLunetteServiceImp implements  OrdonanceLunetteService{
     @Override
     public OrdonnanceLunetteDTO AddOrdLunAvecImage(Long clientId, OrdonnanceLunetteDTO ordonnanceLunetteDTO, MultipartFile image) throws IOException {
         if (image != null && !image.isEmpty()) {
-            String fileName = fileServiceImp.uploadImage(path, image);
-            ordonnanceLunetteDTO.setImage(fileName);
+            String imageUrl = fileServiceImp.uploadImage(image);
+            ordonnanceLunetteDTO.setImage(imageUrl);
         }
         return AddOrdLun(clientId, ordonnanceLunetteDTO);
     }

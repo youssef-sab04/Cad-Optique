@@ -11,7 +11,6 @@ import cad.project.repositries.CategoryRepositry;
 import cad.project.repositries.ProduitRepositry;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,12 +33,6 @@ public class ProduitServiceImp implements  ProduitService {
     @Autowired
     private FileServiceImp fileServiceImp;
 
-    @Value("${project.image}")
-    private String path;
-
-    @Value("${image.base.url}")
-    private String imageBaseUrl;
-
     @Autowired
     private ModelMapper modelMapper;
 
@@ -53,8 +46,8 @@ public class ProduitServiceImp implements  ProduitService {
 
         product.setCategory(category);
 
-        String fileName = fileServiceImp.uploadImage(path, image);
-        product.setImage(fileName);
+        String imageUrl = fileServiceImp.uploadImage(image);
+        product.setImage(imageUrl);
 
         float tva = category.getTva();
         product.setTva(tva);
@@ -73,10 +66,6 @@ public class ProduitServiceImp implements  ProduitService {
         Produit savedProduct = produitRepositry.save(product);
 
         return  modelMapper.map(savedProduct, ProduitDTO.class);
-    }
-
-    private String constructImageUrl(String imageName) {
-        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
     }
 
     @Override
@@ -105,7 +94,7 @@ public class ProduitServiceImp implements  ProduitService {
         List<ProduitDTO> productDTOS = products.stream()
                 .map(product -> {
                     ProduitDTO productDTO = modelMapper.map(product, ProduitDTO.class);
-                    productDTO.setImage(constructImageUrl(product.getImage()));
+                    productDTO.setImage(product.getImage());
                     if(product.getCategory() != null) {
                         productDTO.setCategoryDTO(modelMapper.map(product.getCategory(), CategoryDTO.class));
                     }
@@ -149,8 +138,8 @@ public class ProduitServiceImp implements  ProduitService {
         productFromDb.setSeuilMin(product.getSeuilMin());
         productFromDb.setTraitement(product.getTraitement());
         if (image != null && !image.isEmpty()) {
-            String fileName = fileServiceImp.uploadImage(path, image);
-            productFromDb.setImage(fileName);
+            String imageUrl = fileServiceImp.uploadImage(image);
+            productFromDb.setImage(imageUrl);
         }
 
         double tva =  0 ;  //product.getCategory().getTva();
@@ -161,8 +150,8 @@ public class ProduitServiceImp implements  ProduitService {
 
         double finalPrice = 0;
         if (product.getDiscount() != null && product.getDiscount() > 0) {
-             finalPrice = prixTVA - (prixTVA * product.getDiscount() / 100);
-             productFromDb.setPrice(finalPrice);
+            finalPrice = prixTVA - (prixTVA * product.getDiscount() / 100);
+            productFromDb.setPrice(finalPrice);
         }
 
 

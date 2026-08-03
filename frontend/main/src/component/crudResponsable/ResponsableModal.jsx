@@ -162,7 +162,6 @@ const ResponsableModal = ({ open, setOpen, responsable }) => {
                                     {...register("role", { required: { value: true, message: "Le rôle est requis" } })}
                                 >
                                     <option value="ROLE_RESPONSABLE">Responsable</option>
-                                    <option value="ROLE_ADMIN">Admin</option>
                                 </select>
                                 {errors.role?.message && (
                                     <p className="text-sm font-medium text-red-600">{errors.role.message}</p>

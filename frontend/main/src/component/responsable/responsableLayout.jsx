@@ -22,7 +22,6 @@ export default function DashboardLayout({ role = "admin", userName = "Utilisateu
 
 
     const logOutHandler = () => {
-        console.log("5rg ")
         dispatch(logOutUser(navigate));
     };
 
@@ -46,7 +45,10 @@ export default function DashboardLayout({ role = "admin", userName = "Utilisateu
                 <SidebarContent sections={sections} collapsed={collapsed} />
 
                 <div className="border-t border-white/5 p-3">
-                    <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm font-medium text-slate-500 transition-colors duration-200 hover:bg-red-500/10 hover:text-red-400">
+                    <button
+                        onClick={logOutHandler}
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm font-medium text-slate-500 transition-colors duration-200 hover:bg-red-500/10 hover:text-red-400"
+                    >
                         <LogOut className="h-[18px] w-[18px] shrink-0" />
                         {!collapsed && "Déconnexion"}
                     </button>

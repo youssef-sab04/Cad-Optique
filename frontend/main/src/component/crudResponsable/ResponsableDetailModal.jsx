@@ -1,6 +1,6 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { FaTimes } from "react-icons/fa";
-import { Mail, MapPin, Phone, UserCog } from "lucide-react";
+import { Mail, Phone, UserCog, BadgeCheck, IdCard, Calendar } from "lucide-react";
 
 const ResponsableDetailModal = ({ open, setOpen, responsable }) => {
     if (!responsable) return null;
@@ -18,7 +18,7 @@ const ResponsableDetailModal = ({ open, setOpen, responsable }) => {
                             <FaTimes size={13} />
                         </button>
 
-                        <div className="flex items-center gap-3 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-white px-6 py-5">
+                        <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50 to-white px-6 py-5">
                             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-white shadow-md shadow-violet-200">
                                 <UserCog size={18} />
                             </div>
@@ -43,6 +43,13 @@ const ResponsableDetailModal = ({ open, setOpen, responsable }) => {
                             <div className="grid gap-3 sm:grid-cols-2">
                                 <div className="rounded-xl border border-slate-100 p-4">
                                     <div className="flex items-center gap-2 text-slate-500">
+                                        <BadgeCheck size={14} />
+                                        <span className="text-xs font-semibold uppercase tracking-[0.2em]">Username</span>
+                                    </div>
+                                    <p className="mt-2 text-sm text-slate-700">{responsable.userName || "—"}</p>
+                                </div>
+                                <div className="rounded-xl border border-slate-100 p-4">
+                                    <div className="flex items-center gap-2 text-slate-500">
                                         <Mail size={14} />
                                         <span className="text-xs font-semibold uppercase tracking-[0.2em]">Email</span>
                                     </div>
@@ -57,12 +64,28 @@ const ResponsableDetailModal = ({ open, setOpen, responsable }) => {
                                 </div>
                             </div>
 
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="rounded-xl border border-slate-100 p-4">
+                                    <div className="flex items-center gap-2 text-slate-500">
+                                        <IdCard size={14} />
+                                        <span className="text-xs font-semibold uppercase tracking-[0.2em]">CIN</span>
+                                    </div>
+                                    <p className="mt-2 text-sm text-slate-700">{responsable.cin || "—"}</p>
+                                </div>
+                                <div className="rounded-xl border border-slate-100 p-4">
+                                    <div className="flex items-center gap-2 text-slate-500">
+                                        <Calendar size={14} />
+                                        <span className="text-xs font-semibold uppercase tracking-[0.2em]">Créé le</span>
+                                    </div>
+                                    <p className="mt-2 text-sm text-slate-700">{responsable.createdAt ? new Date(responsable.createdAt).toLocaleString() : "—"}</p>
+                                </div>
+                            </div>
+
                             <div className="rounded-xl border border-slate-100 p-4">
                                 <div className="flex items-center gap-2 text-slate-500">
-                                    <MapPin size={14} />
-                                    <span className="text-xs font-semibold uppercase tracking-[0.2em]">Adresse</span>
+                                    <span className="text-xs font-semibold uppercase tracking-[0.2em]">Rôles</span>
                                 </div>
-                                <p className="mt-2 text-sm text-slate-700">{responsable.adresse || "—"}</p>
+                                <p className="mt-2 text-sm text-slate-700">{responsable.roles?.join(", ") || "—"}</p>
                             </div>
                         </div>
                     </DialogPanel>

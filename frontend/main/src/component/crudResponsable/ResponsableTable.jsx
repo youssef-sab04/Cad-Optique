@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone, Eye, Pencil, Trash2, UserCog } from "lucide-react";
+import { Mail, Phone, Eye, Pencil, Trash2, UserCog, BadgeCheck, IdCard } from "lucide-react";
 
 const initials = (nom = "", prenom = "") => {
     const parts = [nom, prenom].filter(Boolean);
@@ -75,6 +75,10 @@ const ResponsableTable = ({ responsables, onEdit, onDelete, onView }) => {
 
                     <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4">
                         <div className="flex items-center gap-2 text-xs text-slate-600">
+                            <BadgeCheck size={13} className="text-slate-400" />
+                            <span className="truncate">@{responsable.userName || "—"}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
                             <Mail size={13} className="text-slate-400" />
                             <span className="truncate">{responsable.email || "—"}</span>
                         </div>
@@ -83,8 +87,12 @@ const ResponsableTable = ({ responsables, onEdit, onDelete, onView }) => {
                             {responsable.phoneNumber || "—"}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-slate-600">
-                            <MapPin size={13} className="text-slate-400" />
-                            <span className="truncate">{responsable.adresse || "—"}</span>
+                            <IdCard size={13} className="text-slate-400" />
+                            <span className="truncate">CIN: {responsable.cin || "—"}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                            <span className="text-slate-400">Rôles:</span>
+                            <span className="truncate">{responsable.roles?.join(", ") || "—"}</span>
                         </div>
                     </div>
                 </div>

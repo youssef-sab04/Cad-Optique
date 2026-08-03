@@ -24,20 +24,46 @@ const ResponsableModal = ({ open, setOpen, responsable }) => {
             reset({
                 nom: responsable.nom || "",
                 prenom: responsable.prenom || "",
+                userName: responsable.userName || "",
                 email: responsable.email || "",
                 phoneNumber: responsable.phoneNumber || "",
-                adresse: responsable.adresse || "",
+                cin: responsable.cin || "",
+                password: "",
+                role: (responsable.roles && responsable.roles[0]) || "ROLE_RESPONSABLE",
             });
         } else {
-            reset({ nom: "", prenom: "", email: "", phoneNumber: "", adresse: "" });
+            reset({
+                nom: "",
+                prenom: "",
+                userName: "",
+                email: "",
+                phoneNumber: "",
+                cin: "",
+                password: "",
+                role: "ROLE_RESPONSABLE",
+            });
         }
     }, [responsable, open, reset]);
 
     const onSubmit = (data) => {
+        const payload = {
+            nom: data.nom,
+            prenom: data.prenom,
+            userName: data.userName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            cin: data.cin,
+            roles: [data.role],
+        };
+
+        if (data.password) {
+            payload.password = data.password;
+        }
+
         if (responsable) {
-            dispatch(updateResponsable(responsable.id, data, toast, reset, setOpen, setBtnLoader));
+            dispatch(updateResponsable(responsable.id, payload, toast, reset, setOpen, setBtnLoader));
         } else {
-            dispatch(addResponsable(data, toast, reset, setOpen, setBtnLoader));
+            dispatch(addResponsable(payload, toast, reset, setOpen, setBtnLoader));
         }
     };
 
@@ -54,7 +80,7 @@ const ResponsableModal = ({ open, setOpen, responsable }) => {
                             <FaTimes size={13} />
                         </button>
 
-                        <div className="flex items-center gap-3 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-white px-6 py-5">
+                        <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50 to-white px-6 py-5">
                             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-white shadow-md shadow-violet-200">
                                 <UserCog size={18} />
                             </div>
@@ -89,6 +115,17 @@ const ResponsableModal = ({ open, setOpen, responsable }) => {
                             />
                             <div className="md:col-span-2">
                                 <InputField
+                                    label="Nom d'utilisateur"
+                                    id="userName"
+                                    type="text"
+                                    register={register}
+                                    errors={errors}
+                                    required
+                                    message="Le nom d'utilisateur est requis"
+                                />
+                            </div>
+                            <div className="md:col-span-2">
+                                <InputField
                                     label="Email"
                                     id="email"
                                     type="email"
@@ -108,24 +145,41 @@ const ResponsableModal = ({ open, setOpen, responsable }) => {
                                 message="Le téléphone est requis"
                             />
                             <InputField
-                                label="Adresse"
-                                id="adresse"
+                                label="CIN"
+                                id="cin"
                                 type="text"
                                 register={register}
                                 errors={errors}
                                 required
-                                message="L'adresse est requise"
+                                message="Le CIN est requis"
                             />
 
-                             <InputField
-                                label="Password"
-                                id="password1"
+                            <div className="md:col-span-2 flex flex-col gap-1.5">
+                                <label htmlFor="role" className="font-semibold text-sm text-slate-700">Rôle</label>
+                                <select
+                                    id="role"
+                                    className={`px-3 py-2.5 border outline-none bg-white text-slate-900 rounded-lg transition-all duration-200 hover:border-slate-400 focus:ring-2 focus:ring-violet-900/20 ${errors.role ? "border-red-500" : "border-slate-300 focus:border-violet-700"}`}
+                                    {...register("role", { required: { value: true, message: "Le rôle est requis" } })}
+                                >
+                                    <option value="ROLE_RESPONSABLE">Responsable</option>
+                                    <option value="ROLE_ADMIN">Admin</option>
+                                </select>
+                                {errors.role?.message && (
+                                    <p className="text-sm font-medium text-red-600">{errors.role.message}</p>
+                                )}
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <InputField
+                                label="Mot de passe"
+                                id="password"
                                 type="password"
                                 register={register}
                                 errors={errors}
-                                required
-                                message="Le nom est requis"
+                                required={!responsable}
+                                message="Le mot de passe est requis"
                             />
+                            </div>
 
                             <div className="md:col-span-2">
                                 <button

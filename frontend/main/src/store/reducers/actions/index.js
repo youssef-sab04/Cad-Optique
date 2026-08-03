@@ -1271,7 +1271,7 @@ export const fetchResponsables = (queryStrin) => async (dispatch) => {
 export const addResponsable = (respoData, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {
     try {
         setBtnLoader(true);
-        const { data } = await api.post(`/auth/admin/responsable`, respoData);
+        const { data } = await api.post(`/auth/admin/add_responsable`, respoData);
         dispatch({ type: "ADD_RESPONSABLE", payload: data });
         toast.success("Responsable ajouté");
         reset();

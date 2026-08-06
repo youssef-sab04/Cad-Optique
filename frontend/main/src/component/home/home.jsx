@@ -100,7 +100,7 @@ const Home = () => {
             </h1>
             <p className="mt-6 max-w-md font-body text-lg text-slate-600">
               Clients, stock, devis et facturation réunis dans une seule
-              interface pensée pour le rythme d'un magasin d'optique.
+              interface pensée pour le rythme d'un magasin d'optique .
             </p>
             <div className="mt-8 flex items-center gap-4">
               <a

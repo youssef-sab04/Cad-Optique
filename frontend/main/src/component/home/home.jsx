@@ -22,23 +22,23 @@ const Home = () => {
     <div className="min-h-screen bg-white text-slate-900 antialiased">
 
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <header className="sticky top-0 z-50 border-b border-slate-700/60 bg-slate-950 shadow-[0_8px_30px_rgba(15,23,42,0.18)]">
+        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-6">
           <Link to="/"
-                        className="group flex items-center gap-2 font-display text-xl font-bold text-slate-900"
+                        className="group flex items-center gap-3 font-display text-xl font-bold tracking-tight text-white"
                     >
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-900 text-white transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/25 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
                             <Glasses className="h-5 w-5" />
                         </span>
                         Cad-Optique
                     </Link>
 
-          <nav className="hidden items-center gap-8 font-body text-sm font-medium text-slate-600 md:flex">
+          <nav className="hidden items-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-1 font-body text-sm font-semibold text-slate-300 md:flex">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="relative transition-colors hover:text-blue-900 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-blue-700 after:transition-all after:duration-300 hover:after:w-full"
+                className="rounded-xl px-4 py-2 transition-all hover:bg-white/10 hover:text-cyan-300"
               >
                 {link.label}
               </a>
@@ -47,7 +47,7 @@ const Home = () => {
 
           <div className="hidden items-center gap-3 md:flex">
             <Link to="/login" className="hidden items-center gap-3 md:flex">
-              <span className="rounded-full bg-blue-900 px-5 py-2.5 font-body text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-900/30">
+              <span className="rounded-xl bg-cyan-400 px-5 py-3 font-body text-sm font-bold text-slate-950 shadow-md shadow-cyan-400/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-300 hover:shadow-lg hover:shadow-cyan-400/30">
                 Connexion
               </span>
             </Link>
@@ -55,25 +55,26 @@ const Home = () => {
 
 
           <button
-            className="md:hidden"
+            className="rounded-xl border border-white/15 p-2.5 text-slate-200 transition-colors hover:bg-white/10 md:hidden"
             onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Ouvrir le menu"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={menuOpen}
           >
-            {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
         {menuOpen && (
-          <div className="border-t border-slate-200 bg-white px-6 py-4 md:hidden">
-            <nav className="flex flex-col gap-4 font-body text-sm font-medium text-slate-600">
+          <div className="border-t border-white/10 bg-slate-900 px-5 py-4 shadow-lg md:hidden">
+            <nav className="flex flex-col gap-1 font-body text-sm font-semibold text-slate-300">
               {NAV_LINKS.map((link) => (
-                <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+                <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 transition-colors hover:bg-white/10 hover:text-cyan-300">
                   {link.label}
                 </a>
               ))}
               <a
                 href="/login"
-                className="w-fit rounded-full bg-blue-900 px-5 py-2.5 text-sm font-semibold text-white"
+                className="mt-2 w-fit rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-md shadow-cyan-400/20"
               >
                 Connexion
               </a>

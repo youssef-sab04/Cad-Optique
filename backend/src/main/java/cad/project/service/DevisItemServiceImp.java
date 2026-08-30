@@ -5,6 +5,7 @@ import cad.project.exceptions.ResourceNotFoundException;
 import cad.project.model.Devis;
 import cad.project.model.DevisItems;
 import cad.project.model.Produit;
+import cad.project.model.SalesOrderItems;
 import cad.project.playload.DevisItemDTO;
 import cad.project.playload.DevisItemResponse;
 import cad.project.playload.ProduitDTO;
@@ -50,6 +51,15 @@ public class DevisItemServiceImp implements DevisItemService {
         if(devisItemDTO.getQuantity() == null || devisItemDTO.getQuantity() < 1){
             devisItem.setQuantity(1);
         }
+
+        List<DevisItems> devisItemsList = devis.getDevisItemsList();
+
+        devisItemsList.forEach(item -> {
+            if (item.getProduit().getId().equals(produitId)) {
+                throw new APIException("Produit deja existant");
+            }
+        });
+
         devisItem.setDevis(devis);
         devisItem.setProduit(produit);
         devisItem.setTva(produit.getTva());

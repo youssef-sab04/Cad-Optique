@@ -179,6 +179,12 @@ public class DevisServiceImp implements DevisService {
             if (produit.getQuantity() < devisItem.getQuantity()) {
                 throw new APIException("Stock insuffisant pour le produit : " + produit.getNom());
             }
+        }
+
+        for (DevisItems devisItem : devis.getDevisItemsList()) {
+            Produit produit = devisItem.getProduit();
+
+
 
             SalesOrderItems item = new SalesOrderItems();
             item.setSalesOrder(salesOrderSaved);
@@ -218,6 +224,7 @@ public class DevisServiceImp implements DevisService {
 
         devis.setSalesOrder(salesOrderSaved);
         devis.setStatus("Valide");
+        devis.setTotalprice(total);
         Devis devisSaved = devisRepositry.save(devis);
 
         return modelMapper.map(devisSaved, DevisDTO.class);

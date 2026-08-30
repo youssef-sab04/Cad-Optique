@@ -50,7 +50,17 @@ public class SalesOrderItemServiceImp implements SalesOrderItemService {
 
 
 
+
+
         SalesOrderItems salesOrderItem = modelMapper.map(salesOrderItemDTO, SalesOrderItems.class);
+        List<SalesOrderItems> salesOrderItems = salesOrder.getOrderItemsList();
+
+        salesOrderItems.forEach(item -> {
+            if (item.getProduit().getId().equals(produitId)) {
+                throw new APIException("Produit deja existant");
+            }
+        });
+
         if(salesOrderItemDTO.getQuantity() == null   || salesOrderItemDTO.getQuantity() < 1 ){
             salesOrderItem.setQuantity(1);
         }
@@ -94,7 +104,7 @@ public class SalesOrderItemServiceImp implements SalesOrderItemService {
         if(salesOrderItemFromDb.getQuantity() + salesOrderItemDTO.getQuantity() == 0 ){
             throw new APIException("Impossible de decrementer");
         }
-        salesOrderItemFromDb.setQuantity(salesOrderItemFromDb.getQuantity() + salesOrderItemDTO.getQuantity());
+        salesOrderItemFromDb.setQuantity(salesOrderItemDTO.getQuantity());
 
         SalesOrderItems salesOrderItemSaved = saleOrderItemsRepositry.save(salesOrderItemFromDb);
         UpdateTotlPrice(salesOrderItemFromDb.getSalesOrder().getId());

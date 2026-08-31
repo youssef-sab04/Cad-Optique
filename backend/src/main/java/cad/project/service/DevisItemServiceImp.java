@@ -5,11 +5,10 @@ import cad.project.exceptions.ResourceNotFoundException;
 import cad.project.model.Devis;
 import cad.project.model.DevisItems;
 import cad.project.model.Produit;
-import cad.project.model.SalesOrderItems;
 import cad.project.playload.DevisItemDTO;
 import cad.project.playload.DevisItemResponse;
 import cad.project.playload.ProduitDTO;
-import cad.project.repositries.DecvisItemsRepositry;
+import cad.project.repositries.DevisItemsRepositry;
 import cad.project.repositries.DevisRepositry;
 import cad.project.repositries.ProduitRepositry;
 import org.modelmapper.ModelMapper;
@@ -30,7 +29,7 @@ public class DevisItemServiceImp implements DevisItemService {
     private ModelMapper modelMapper;
 
     @Autowired
-    private DecvisItemsRepositry devisItemsRepositry;
+    private DevisItemsRepositry devisItemsRepositry;
 
     @Autowired
     private DevisRepositry devisRepositry;

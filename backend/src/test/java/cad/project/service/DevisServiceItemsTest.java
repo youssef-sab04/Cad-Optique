@@ -1,16 +1,12 @@
 package cad.project.service;
 
 import cad.project.exceptions.APIException;
-import cad.project.exceptions.ResourceNotFoundException;
 import cad.project.model.*;
-import cad.project.playload.DevisDTO;
 import cad.project.playload.DevisItemDTO;
-import cad.project.playload.SalesOrderItemDTO;
 import cad.project.repositries.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,7 +40,7 @@ public class DevisServiceItemsTest {
     private SaleOrderItemsRepositry saleOrderItemsRepositry;
 
     @Mock
-    private DecvisItemsRepositry devisItemsRepositry;
+    private DevisItemsRepositry devisItemsRepositry;
 
     @Mock
     private ModelMapper modelMapper;

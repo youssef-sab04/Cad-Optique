@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CommandeItemRepositry extends JpaRepository<CommandeItem, Long> {
     List<CommandeItem> findByCommandeId(Long commandeId);
+
+    List<CommandeItem> findByProduitId(Long produitId);
 }

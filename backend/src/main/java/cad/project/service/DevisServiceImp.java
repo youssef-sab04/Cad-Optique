@@ -54,7 +54,7 @@ public class DevisServiceImp implements DevisService {
     private Mouvement_StockRepositry mouvementStockRepositry;
 
     @Autowired
-    private DecvisItemsRepositry decvisItemsRepositry;
+    private DevisItemsRepositry decvisItemsRepositry;
 
 
 

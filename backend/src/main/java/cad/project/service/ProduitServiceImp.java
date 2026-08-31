@@ -2,13 +2,11 @@ package cad.project.service;
 
 import cad.project.exceptions.APIException;
 import cad.project.exceptions.ResourceNotFoundException;
-import cad.project.model.Category;
-import cad.project.model.Produit;
+import cad.project.model.*;
 import cad.project.playload.CategoryDTO;
 import cad.project.playload.ProductResponse;
 import cad.project.playload.ProduitDTO;
-import cad.project.repositries.CategoryRepositry;
-import cad.project.repositries.ProduitRepositry;
+import cad.project.repositries.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +30,24 @@ public class ProduitServiceImp implements  ProduitService {
     private ProduitRepositry produitRepositry;
     @Autowired
     private FileServiceImp fileServiceImp;
+
+    @Autowired
+    private CommandeItemRepositry commandeItemRepositry;
+
+    @Autowired
+    private DevisItemsRepositry devisItemRepositry;
+
+    @Autowired
+    private SaleOrderItemsRepositry saleOrderItemsRepositry;
+
+    @Autowired
+    private CommandeItemServiceImp commandeItemServiceImp;
+
+    @Autowired
+    private DevisItemServiceImp devisItemServiceImp;
+
+    @Autowired
+    private SalesOrderItemServiceImp salesOrderItemServiceImp;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -115,15 +131,23 @@ public class ProduitServiceImp implements  ProduitService {
         return  productResponse;
     }
 
-    @Override
-    public ProduitDTO updateProduct(Long productId, ProduitDTO productDTO, MultipartFile image) throws IOException {
 
-        Produit productFromDb = produitRepositry.findById(productId)
+    @Override
+    public ProduitDTO deleteProduct(Long productId) {
+        Produit product = produitRepositry.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
-        Produit product = modelMapper.map(productDTO, Produit.class);
 
-        // set
+        produitRepositry.delete(product);
+        return modelMapper.map(product, ProduitDTO.class);
+
+    }
+
+    @Override
+    public ProduitDTO updateProduct(Long productId, ProduitDTO productDTO, MultipartFile image) throws IOException {
+        Produit productFromDb = produitRepositry.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        Produit product = modelMapper.map(productDTO, Produit.class);
         productFromDb.setNom(product.getNom());
         productFromDb.setDescription(product.getDescription());
         productFromDb.setCode_barre(product.getCode_barre());
@@ -141,38 +165,44 @@ public class ProduitServiceImp implements  ProduitService {
             String imageUrl = fileServiceImp.uploadImage(image);
             productFromDb.setImage(imageUrl);
         }
-
-        double tva =  0 ;  //product.getCategory().getTva();
+        double tva = 0;
         double prixTVA = product.getPrixHT() + product.getPrixHT() * tva * 0.01;
         productFromDb.setPrice(prixTVA);
-
-
-
         double finalPrice = 0;
         if (product.getDiscount() != null && product.getDiscount() > 0) {
             finalPrice = prixTVA - (prixTVA * product.getDiscount() / 100);
             productFromDb.setPrice(finalPrice);
         }
-
-
-
-
-
         Produit savedProduct = produitRepositry.save(productFromDb);
 
+        List<CommandeItem> commandeItems = commandeItemRepositry.findByProduitId(productId);
+        commandeItems.stream()
+                .filter(item -> !"LIVREE".equals(item.getCommande().getStatus()))
+                .forEach(item -> {
+                    item.setPrice(savedProduct.getPrice());
+                    commandeItemRepositry.save(item);
+                    commandeItemServiceImp.UpdateTotlPrice(item.getCommande().getId());
+                });
 
+        List<DevisItems> devisItems = devisItemRepositry.findByProduitId(productId);
+        devisItems.stream()
+                .filter(item -> !"VALIDE".equals(item.getDevis().getStatus()))
+                .forEach(item -> {
+                    item.setPrice(savedProduct.getPrice());
+                    devisItemRepositry.save(item);
+                    devisItemServiceImp.UpdateTotlPrice(item.getDevis().getId());
+                });
+
+        List<SalesOrderItems> salesOrderItems = saleOrderItemsRepositry.findByProduitId(productId);
+        salesOrderItems.stream()
+                .filter(item -> !"VALIDE".equals(item.getSalesOrder().getStatus()))
+                .forEach(item -> {
+                    item.setPrice(savedProduct.getPrice());
+                    saleOrderItemsRepositry.save(item);
+                    salesOrderItemServiceImp.UpdateTotlPrice(item.getSalesOrder().getId());
+                });
 
         return modelMapper.map(savedProduct, ProduitDTO.class);
     }
 
-    @Override
-    public ProduitDTO deleteProduct(Long productId) {
-        Produit product = produitRepositry.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
-
-
-        produitRepositry.delete(product);
-        return modelMapper.map(product, ProduitDTO.class);
-
-    }
 }

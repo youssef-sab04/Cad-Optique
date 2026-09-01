@@ -3,6 +3,8 @@ package cad.project.playload;
 import cad.project.model.Category;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ public class ProduitDTO {
 
     private Long id;
 
+    @NotBlank
     private String nom;
 
     private String description;
@@ -31,7 +34,10 @@ public class ProduitDTO {
     private Double prixAchat;
     private Float tva;
     private Float discount;
+
+    @NotNull
     private Double price;
+
     private String marque;
     private String couleur;
     private String modele;

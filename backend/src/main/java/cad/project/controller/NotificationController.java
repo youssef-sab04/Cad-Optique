@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class NotificationController {
     NotificationService notificationService  ;
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Notifications admin (stock)")
     @GetMapping("/admin/notifications")
     public ResponseEntity<NotificationResponse> getAllNotificationsAdmin(
@@ -31,6 +33,7 @@ public class NotificationController {
         return new ResponseEntity<>(notificationResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get all Notifications du clients")
     @GetMapping("/public/notifications/clients")
     public ResponseEntity<NotificationResponse> getNotificationsByClient(
@@ -42,6 +45,7 @@ public class NotificationController {
         return new ResponseEntity<>(notificationResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Notifications par client")
     @GetMapping("/public/notifications/clients/{clientId}")
     public ResponseEntity<NotificationResponse> getNotificationsByClient(
@@ -55,6 +59,7 @@ public class NotificationController {
 
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Notifications par produit")
     @GetMapping("/admin/notifications/produits/{produitId}")
     public ResponseEntity<List<NotificationDTO>> getNotificationsByProduit(@PathVariable Long produitId) {
@@ -62,6 +67,7 @@ public class NotificationController {
         return new ResponseEntity<>(notificationDTOS, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Lire notif")
     @PutMapping("/admin/notifications/{notifId}")
     public ResponseEntity<NotificationDTO> viewNotifications(@PathVariable Long notifId) {

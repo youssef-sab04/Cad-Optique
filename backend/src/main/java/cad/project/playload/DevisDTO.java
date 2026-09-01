@@ -21,7 +21,7 @@ public class DevisDTO {
 
     private ClientDTO clientDTO;
 
-   private  String  status; // envoye, accepte, refuse
+   private  String  status;
    private  String description;
    private double  Totalprice;
    private LocalDateTime createdAt;

@@ -18,7 +18,10 @@ public class FournisseurDTO {
 
 
     private Long id;
+
+    @NotBlank
     private String nom;
+
     private String phoneNumber;
     private String adresse;
     private String email;

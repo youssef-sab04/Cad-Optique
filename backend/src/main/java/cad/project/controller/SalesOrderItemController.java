@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class SalesOrderItemController {
     @Autowired
     SalesOrderItemService salesOrderItemService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter un item a une vente")
     @PostMapping("/admin/salesorderitems/salesorders/{salesOrderId}/produits/{produitId}")
     public ResponseEntity<SalesOrderItemDTO> addSalesOrderItem(
@@ -31,6 +33,7 @@ public class SalesOrderItemController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un item")
     @PutMapping("/admin/salesorderitems/{salesOrderItemId}")
     public ResponseEntity<SalesOrderItemDTO> updateSalesOrderItem(@Valid @RequestBody SalesOrderItemDTO salesOrderItemDTO,
@@ -39,6 +42,7 @@ public class SalesOrderItemController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un item")
     @DeleteMapping("/admin/salesorderitems/{salesOrderItemId}")
     public ResponseEntity<SalesOrderItemDTO> deleteSalesOrderItem(@PathVariable Long salesOrderItemId){
@@ -46,6 +50,7 @@ public class SalesOrderItemController {
         return new ResponseEntity<>(deleted, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get SalesOrderItems")
     @GetMapping("/public/salesorderitems")
     public ResponseEntity<SalesOrderItemResponse> getAllSalesOrderItems(
@@ -57,6 +62,7 @@ public class SalesOrderItemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get SalesOrderItems par vente")
     @GetMapping("/public/salesorderitems/salesorders/{salesOrderId}")
     public ResponseEntity<List<SalesOrderItemDTO>> getSalesOrderItemsBySalesOrderId(@PathVariable Long salesOrderId){

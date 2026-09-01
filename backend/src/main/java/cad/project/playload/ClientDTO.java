@@ -1,6 +1,7 @@
 package cad.project.playload;
 
 import cad.project.model.OrdonnanceLunette;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,12 @@ public class ClientDTO {
 
     @NotBlank
     private String prenom;
+
     private String phoneNumber;
+
     private String adresse;
+
+    @Email
     private String email;
     private String mutuelle;
     private LocalDate dateNaissance;

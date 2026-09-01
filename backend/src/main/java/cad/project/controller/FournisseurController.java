@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class FournisseurController {
     @Autowired
     FournisseurService fournisseurService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Ajouter un fournisseur")
     @PostMapping("/admin/fournisseur")
     public ResponseEntity<FournisseurDTO> addFournisseur(@Valid @RequestBody FournisseurDTO fournisseurDTO){
@@ -25,6 +27,7 @@ public class FournisseurController {
         return new ResponseEntity<>(fournisseurDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Modifier un fournisseur")
     @PutMapping("/admin/fournisseurs/{fournisseurId}")
     public ResponseEntity<FournisseurDTO> updateFournisseur(@Valid @RequestBody FournisseurDTO fournisseurDTO,
@@ -33,6 +36,7 @@ public class FournisseurController {
         return new ResponseEntity<>(updatedFournisseurDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Supprimer un fournisseur")
     @DeleteMapping("/admin/fournisseurs/{fournisseurId}")
     public ResponseEntity<FournisseurDTO> deleteFournisseur(@PathVariable Long fournisseurId){
@@ -40,6 +44,7 @@ public class FournisseurController {
         return new ResponseEntity<>(deletedFournisseur, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Get Fournisseurs")
     @GetMapping("/public/fournisseurs")
     public ResponseEntity<FournisseurResponse> getAllFournisseurs(

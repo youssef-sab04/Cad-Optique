@@ -16,6 +16,7 @@ public class ExamenDTO {
     private Long id;
 
 
+
     private LocalDate dateExamen;
     private  ClientDTO clientDTO;
 

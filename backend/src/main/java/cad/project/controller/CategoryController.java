@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter une category")
     @PostMapping("/admin/category")
     public ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO){
@@ -32,6 +34,7 @@ public class CategoryController {
     }
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un category")
     @PutMapping("/admin/categorys/{categoryId}")
     public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO,
@@ -40,6 +43,7 @@ public class CategoryController {
         return new ResponseEntity<>(updatedCategoryDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un category")
     @DeleteMapping("/admin/categorys/{categoryId}")
     public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long categoryId){
@@ -47,6 +51,7 @@ public class CategoryController {
         return new ResponseEntity<>(deletedCategory, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Categories")
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class OrdonnanceLentilleController {
     @Autowired
     private OrdonnanceLentilleService ordonnanceLentilleService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter une ordonnance lentille à un client")
     @PostMapping("/admin/client/ordonnance-lentille/{clientId}")
     public ResponseEntity<OrdonnanceLentilleDTO> ajouterOrLent(
@@ -29,6 +31,7 @@ public class OrdonnanceLentilleController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier une ordonnance lentille")
     @PutMapping("/admin/ordonnance-lentille/{ordonnanceId}")
     public ResponseEntity<OrdonnanceLentilleDTO> modifierOrLent(
@@ -39,6 +42,7 @@ public class OrdonnanceLentilleController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer une ordonnance lentille")
     @DeleteMapping("/admin/ordonnance-lentille/{ordonnanceId}")
     public ResponseEntity<OrdonnanceLentilleDTO> supprimerOrLent(@PathVariable Long ordonnanceId) {
@@ -47,6 +51,7 @@ public class OrdonnanceLentilleController {
         return new ResponseEntity<>(deleted, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Retourner les ordonnances lentille avec pagination")
     @GetMapping("/public/ordonnances-lentille")
     public ResponseEntity<ClientResponse> getAllOrdonnancesLentille(
@@ -65,6 +70,7 @@ public class OrdonnanceLentilleController {
         return new ResponseEntity<>(clientResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Récupérer une ordonnance lentille par id")
     @GetMapping("/public/ordonance-lentille/{ordonanceId}")
     public ResponseEntity<OrdonnanceLentilleDTO> getOrdLeById(@PathVariable Long ordonanceId){

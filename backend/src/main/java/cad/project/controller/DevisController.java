@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class DevisController {
     @Autowired
     DevisPdfService devisPdfService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter un devis")
     @PostMapping("/admin/devis/clients/{clientId}")
     public ResponseEntity<DevisDTO> addDevis(@Valid @RequestBody DevisDTO devisDTO,
@@ -31,6 +33,7 @@ public class DevisController {
         return new ResponseEntity<>(devisDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un devis")
     @PutMapping("/admin/devis/{devisId}")
     public ResponseEntity<DevisDTO> updateDevis(@Valid @RequestBody DevisDTO devisDTO,
@@ -39,6 +42,7 @@ public class DevisController {
         return new ResponseEntity<>(updatedDevisDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un devis")
     @DeleteMapping("/admin/devis/{devisId}")
     public ResponseEntity<DevisDTO> deleteDevis(@PathVariable Long devisId){
@@ -46,6 +50,7 @@ public class DevisController {
         return new ResponseEntity<>(deletedDevis, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Devis")
     @GetMapping("/public/devis")
     public ResponseEntity<DevisResponse> getAllDevis(
@@ -57,6 +62,7 @@ public class DevisController {
         return new ResponseEntity<>(devisResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Annuler un devis")
     @PostMapping("/admin/devis/{devisId}/cancel")
     public ResponseEntity<DevisDTO> cancelDevis(@PathVariable Long devisId){
@@ -64,6 +70,7 @@ public class DevisController {
         return new ResponseEntity<>(devisDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Confirmer un devis")
     @PostMapping("/admin/devis/{devisId}/confirm")
     public ResponseEntity<DevisDTO> confirmDevis(@PathVariable Long devisId){
@@ -71,6 +78,7 @@ public class DevisController {
         return new ResponseEntity<>(devisDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Generer le PDF du devis")
     @GetMapping("/admin/devis/{devisId}/pdf")
     public ResponseEntity<byte[]> generateDevisPdf(@PathVariable Long devisId) {

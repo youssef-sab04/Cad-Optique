@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class ClientController {
     @Autowired
     ClientService clientService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter un client")
     @PostMapping("/admin/client")
     public ResponseEntity<ClientDTO> addClient(@Valid @RequestBody ClientDTO clientDTO){
@@ -25,6 +27,7 @@ public class ClientController {
         return new ResponseEntity<>(savedClientDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Retourner les clients avec pagination")
     @GetMapping("/public/clients")
     public ResponseEntity<ClientResponse> getAllClients(
@@ -39,6 +42,7 @@ public class ClientController {
     }
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Retourner les clients avec pagination (Nom & prenom)")
     @GetMapping("/public/Clients/P-N")
     public ResponseEntity<ClientResponse> getAllClients(
@@ -54,6 +58,7 @@ public class ClientController {
         return new ResponseEntity<>(clientResponse,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un client")
     @PutMapping("/admin/clients/{clientId}")
     public ResponseEntity<ClientDTO> updateClient(@Valid @RequestBody ClientDTO clientDTO,
@@ -62,6 +67,7 @@ public class ClientController {
         return new ResponseEntity<>(updatedClientDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Afficher un client id")
     @GetMapping("/public/clients/{clientId}")
     public ResponseEntity<ClientDTO> getClient(@PathVariable Long clientId){
@@ -69,6 +75,7 @@ public class ClientController {
         return new ResponseEntity<>(updatedClientDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un client")
     @DeleteMapping("/admin/clients/{clientId}")
     public ResponseEntity<ClientDTO> deleteClient(@PathVariable Long clientId){

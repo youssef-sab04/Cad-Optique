@@ -23,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -97,7 +98,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create new user's account
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
@@ -161,12 +161,14 @@ public class AuthController {
                 .body(new MessageResponse("You've been signed out!"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ajouter un responsable")
     @PostMapping("/admin/add_responsable")
     public ResponseEntity<UserDTO> addResponsable(@Valid @RequestBody UserDTO userDTO){
         UserDTO userDTOSaved = userService.addRespo(userDTO);
         return new ResponseEntity<>(userDTOSaved, HttpStatus.CREATED);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get responsables")
     @GetMapping("/admin/responsables")
     public ResponseEntity<UserResponse> getAllRespos(
@@ -178,12 +180,14 @@ public class AuthController {
         return new ResponseEntity<>(userService.getAllRespos(pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get responsable par id")
     @GetMapping("/admin/responsables/{userId}")
     public ResponseEntity<UserDTO> getRespoById(@PathVariable Long userId){
         return new ResponseEntity<>(userService.getRespoById(userId), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Modifier un responsable")
     @PutMapping("/admin/responsables/{userId}")
     public ResponseEntity<UserDTO> updateRespo(@Valid @RequestBody UserDTO userDTO,
@@ -191,6 +195,7 @@ public class AuthController {
         return new ResponseEntity<>(userService.updateRespo(userId, userDTO), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Supprimer un responsable")
     @DeleteMapping("/admin/responsables/{userId}")
     public ResponseEntity<UserDTO> deleteRespo(@PathVariable Long userId){

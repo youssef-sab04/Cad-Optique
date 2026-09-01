@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class CommandeItemController {
     @Autowired
     CommandeItemService commandeItemService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Ajouter un item a une commande")
     @PostMapping("/admin/commandeItem/commandes/{commandeId}/produits/{produitId}")
     public ResponseEntity<CommandeItemDTO> addCommandeItem(
@@ -33,6 +35,7 @@ public class CommandeItemController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Modifier un item")
     @PutMapping("/admin/commandeItems/{commandeItemId}")
     public ResponseEntity<CommandeItemDTO> updateCommandeItem(@Valid @RequestBody CommandeItemDTO commandeItemDTO,
@@ -41,6 +44,7 @@ public class CommandeItemController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Supprimer un item")
     @DeleteMapping("/admin/commandeItems/{commandeItemId}")
     public ResponseEntity<CommandeItemDTO> deleteCommandeItem(@PathVariable Long commandeItemId){
@@ -48,6 +52,7 @@ public class CommandeItemController {
         return new ResponseEntity<>(deleted, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Get CommandeItems")
     @GetMapping("/public/commandeItems")
     public ResponseEntity<CommandeItemResponse> getAllCommandeItems(
@@ -60,6 +65,7 @@ public class CommandeItemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Get CommandeItems par commande")
     @GetMapping("/public/commandeItems/commandes/{commandeId}")
     public ResponseEntity<List<CommandeItemDTO>> getCommandeItemsByCommandeId(@PathVariable Long commandeId){

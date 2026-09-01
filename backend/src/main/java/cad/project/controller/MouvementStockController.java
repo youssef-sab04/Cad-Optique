@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class MouvementStockController {
 
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get All mouvement Stock")
     @GetMapping("/public/mouvements-stock")
     public ResponseEntity<Mouvement_StockResponse> getAllCategories(
@@ -30,6 +32,7 @@ public class MouvementStockController {
         return new ResponseEntity<>(mouvementStockResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get mouvement Stock d'un produit")
     @GetMapping("/public/mouvements-stock/{productId}")
     public ResponseEntity<Mouvement_StockResponse> getAllCategories(

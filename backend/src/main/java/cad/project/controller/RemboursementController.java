@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,8 @@ public class RemboursementController {
     @Autowired
     RemboursementService remboursementService;
 
+
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter un remboursement")
     @PostMapping("/admin/remboursements/orders/{orderId}")
     public ResponseEntity<RemboursementDTO> addRemboursement(@Valid @RequestBody RemboursementDTO remboursementDTO,
@@ -26,6 +29,7 @@ public class RemboursementController {
         return new ResponseEntity<>(remboursementDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un remboursement")
     @PutMapping("/admin/remboursements/{remboursementId}")
     public ResponseEntity<RemboursementDTO> updateRemboursement(@Valid @RequestBody RemboursementDTO remboursementDTO,
@@ -34,6 +38,7 @@ public class RemboursementController {
         return new ResponseEntity<>(updatedRemboursementDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un remboursement")
     @DeleteMapping("/admin/remboursements/{remboursementId}")
     public ResponseEntity<RemboursementDTO> deleteRemboursement(@PathVariable Long remboursementId) {
@@ -41,6 +46,7 @@ public class RemboursementController {
         return new ResponseEntity<>(deletedRemboursement, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Remboursements")
     @GetMapping("/public/remboursements")
     public ResponseEntity<RemboursementResponse> getAllRemboursements(
@@ -52,6 +58,7 @@ public class RemboursementController {
         return new ResponseEntity<>(remboursementResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get Remboursement par commande")
     @GetMapping("/public/remboursements/orders/{orderId}")
     public ResponseEntity<RemboursementDTO> getRemboursementByOrder(@PathVariable Long orderId) {
@@ -59,6 +66,7 @@ public class RemboursementController {
         return new ResponseEntity<>(remboursementDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Marquer remboursement comme recu")
     @PutMapping("/admin/remboursements/{remboursementId}/recu")
     public ResponseEntity<RemboursementDTO> marquerRecu(@PathVariable Long remboursementId) {

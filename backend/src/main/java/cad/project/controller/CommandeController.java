@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class CommandeController {
     @Autowired
     CommandeService commandeService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Ajouter une commande")
     @PostMapping("/admin/commande/fournisseurs/{fournisseurId}")
     public ResponseEntity<CommandeDTO> addCommande(@Valid @RequestBody CommandeDTO commandeDTO,
@@ -26,6 +28,7 @@ public class CommandeController {
         return new ResponseEntity<>(commandeDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Valider une commande")
     @PostMapping("/admin/commande/{commandeId}")
     public ResponseEntity<CommandeDTO> ValiderCommande(@PathVariable Long commandeId){
@@ -33,6 +36,7 @@ public class CommandeController {
         return new ResponseEntity<>(commandeDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier une commande")
     @PutMapping("/admin/commandes/{commandeId}")
     public ResponseEntity<CommandeDTO> updateCommande(@Valid @RequestBody CommandeDTO commandeDTO,
@@ -41,6 +45,7 @@ public class CommandeController {
         return new ResponseEntity<>(updatedCommandeDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Supprimer une commande")
     @DeleteMapping("/admin/commandes/{commandeId}")
     public ResponseEntity<CommandeDTO> deleteCommande(@PathVariable Long commandeId){
@@ -48,6 +53,7 @@ public class CommandeController {
         return new ResponseEntity<>(deletedCommande, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Get Commandes")
     @GetMapping("/public/commandes")
     public ResponseEntity<CommandeResponse> getAllCommandes(

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class SalesOrderController {
     @Autowired
     SalesOrderPdfService salesOrderPdfService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter une vente")
     @PostMapping("/admin/salesorder/clients/{clientId}")
     public ResponseEntity<SalesOrderDTO> addSalesOrder(@Valid @RequestBody SalesOrderDTO salesOrderDTO,
@@ -32,6 +34,7 @@ public class SalesOrderController {
         return new ResponseEntity<>(salesOrderDTOSaved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier une vente")
     @PutMapping("/admin/salesorders/{salesOrderId}")
     public ResponseEntity<SalesOrderDTO> updateSalesOrder(@Valid @RequestBody SalesOrderDTO salesOrderDTO,
@@ -40,6 +43,7 @@ public class SalesOrderController {
         return new ResponseEntity<>(updatedSalesOrderDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer une vente")
     @DeleteMapping("/admin/salesorders/{salesOrderId}")
     public ResponseEntity<SalesOrderDTO> deleteSalesOrder(@PathVariable Long salesOrderId){
@@ -47,6 +51,7 @@ public class SalesOrderController {
         return new ResponseEntity<>(deletedSalesOrder, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get SalesOrders")
     @GetMapping("/public/salesorders")
     public ResponseEntity<SalesOrderResponse> getAllSalesOrders(
@@ -58,6 +63,7 @@ public class SalesOrderController {
         return new ResponseEntity<>(salesOrderResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Generer le recu PDF de la vente")
     @GetMapping("/admin/salesorder/{salesOrderId}/pdf")
     public ResponseEntity<byte[]> generateSalesOrderPdf(@PathVariable Long salesOrderId) {
@@ -68,7 +74,9 @@ public class SalesOrderController {
                 .body(pdf);
     }
 
+
     @Operation(summary = "Valider une commande/vente")
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PostMapping("/admin/ordre/{ordreId}")
     public ResponseEntity<SalesOrderDTO> validerOrdre(@PathVariable Long ordreId){
         SalesOrderDTO salesOrderDTO = salesOrderService.ValiderOrdre(ordreId);

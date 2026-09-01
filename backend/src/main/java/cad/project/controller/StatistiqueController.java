@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class StatistiqueController {
     @Autowired
     private StatistiqueService statistiqueService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Tableau de bord : CA, ventes, devis, stock, clients pour une année (avec détail par mois)")
     @GetMapping("/admin/statistiques/{annee}")
     public ResponseEntity<DashboardStatsDTO> getDashboardStats(@PathVariable int annee) {
@@ -29,6 +31,7 @@ public class StatistiqueController {
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Tableau de bord pour l'année en cours")
     @GetMapping("/admin/statistiques")
     public ResponseEntity<DashboardStatsDTO> getDashboardStatsAnneeEnCours() {
@@ -36,6 +39,7 @@ public class StatistiqueController {
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @Operation(summary = "Télécharger le rapport annuel en PDF")
     @GetMapping("/admin/statistiques/{annee}/rapport-pdf")
     public ResponseEntity<byte[]> telechargerRapportPdf(@PathVariable int annee) {

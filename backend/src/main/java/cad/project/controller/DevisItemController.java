@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class DevisItemController {
     @Autowired
     DevisItemService devisItemService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter un item a un devis")
     @PostMapping("/admin/devisitems/devis/{devisId}/produits/{produitId}")
     public ResponseEntity<DevisItemDTO> addDevisItem(
@@ -31,6 +33,7 @@ public class DevisItemController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier un item")
     @PutMapping("/admin/devisitems/{devisItemId}")
     public ResponseEntity<DevisItemDTO> updateDevisItem(@Valid @RequestBody DevisItemDTO devisItemDTO,
@@ -39,6 +42,7 @@ public class DevisItemController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer un item")
     @DeleteMapping("/admin/devisitems/{devisItemId}")
     public ResponseEntity<DevisItemDTO> deleteDevisItem(@PathVariable Long devisItemId){
@@ -47,6 +51,7 @@ public class DevisItemController {
     }
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get DevisItems")
     @GetMapping("/public/devisitems")
     public ResponseEntity<DevisItemResponse> getAllDevisItems(
@@ -58,6 +63,7 @@ public class DevisItemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get DevisItems par devis")
     @GetMapping("/public/devisitems/devis/{devisId}")
     public ResponseEntity<List<DevisItemDTO>> getDevisItemsByDevisId(@PathVariable Long devisId){

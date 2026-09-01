@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,7 @@ public class OrdonanceLunetteController {
     OrdonnanceOcrParser ordonnanceOcrParser;
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Ajouter une ordoance a un client")
     @PostMapping("admin/client/ordonance-lunette/{clientId}")
     public ResponseEntity<OrdonnanceLunetteDTO> ajouterOrL(@Valid @RequestBody OrdonnanceLunetteDTO ordonnanceLunetteDTO,
@@ -45,6 +47,7 @@ public class OrdonanceLunetteController {
         return new ResponseEntity<>(OrdonnanceLunetteDTOSaved , HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Modifier une ordoance")
     @PutMapping("admin/ordonnance-lunette/{ordonanceId}")
     public ResponseEntity<OrdonnanceLunetteDTO> modifierOrL(@Valid @RequestBody OrdonnanceLunetteDTO ordonnanceLunetteDTO,
@@ -53,6 +56,7 @@ public class OrdonanceLunetteController {
         return new ResponseEntity<>(OrdonnanceLunetteDTOUpdated , HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer une ordoance")
     @DeleteMapping("admin/ordonnance-lunette/{ordonanceId}")
     public ResponseEntity<OrdonnanceLunetteDTO> supprimerOrL(@PathVariable Long ordonanceId){
@@ -61,6 +65,7 @@ public class OrdonanceLunetteController {
     }
 
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Retourner les ordonance avec pagination")
     @GetMapping("/public/ordonances-lunette")
     public ResponseEntity<ClientResponse> getAllOrdL(
@@ -77,6 +82,7 @@ public class OrdonanceLunetteController {
         ClientResponse clientResponse = ordonanceLunetteService.getAlOrdonance(pageNumber, pageSize, sortOrder , keyword );
         return new ResponseEntity<>(clientResponse,HttpStatus.OK);    }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Récupérer une ordonnance lunette par id")
     @GetMapping("/public/ordonance-lunette/{ordonanceId}")
     public ResponseEntity<OrdonnanceLunetteDTO> getOrdLById(@PathVariable Long ordonanceId){
@@ -84,6 +90,7 @@ public class OrdonanceLunetteController {
         return new ResponseEntity<>(ordonnanceLunetteDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PostMapping(value = "/admin/ordonance-lunette/scan/{clientId}", consumes = {"multipart/form-data"})
     public ResponseEntity<OrdonnanceLunetteDTO> addProduit (
             @PathVariable Long clientId ,
@@ -92,6 +99,7 @@ public class OrdonanceLunetteController {
         return new ResponseEntity<>(ordonnanceLunetteDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PostMapping(value = "/admin/ordonance-lunette/scan-preview", consumes = {"multipart/form-data"})
     public ResponseEntity<Map<String, Object>> scanPreview(@RequestPart("image") MultipartFile image) throws IOException {
         String text = visionOcrService.extractText(image.getBytes());
@@ -104,6 +112,7 @@ public class OrdonanceLunetteController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PostMapping(value = "/admin/client/ordonance-lunette-with-image/{clientId}", consumes = {"multipart/form-data"})
     public ResponseEntity<OrdonnanceLunetteDTO> ajouterOrLAvecImage(
             @RequestPart("ordonnance") OrdonnanceLunetteDTO ordonnanceLunetteDTO,

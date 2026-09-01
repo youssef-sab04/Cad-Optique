@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,7 @@ public class ProduitController {
     @Autowired
     CategoryService categoryService;
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PostMapping(value = "/admin/produits/{categoryId}", consumes = {"multipart/form-data"})
     public ResponseEntity<ProduitDTO> addProduit (
             @RequestPart("produit") @Valid ProduitDTO produitDTO,
@@ -35,6 +37,7 @@ public class ProduitController {
         return new ResponseEntity<>(savedProduitDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Get produits + recherger par nom + categorie S ")
     @GetMapping("/public/products")
     public ResponseEntity<ProductResponse> getAllProducts(
@@ -49,6 +52,7 @@ public class ProduitController {
         return new ResponseEntity<>(productResponse,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @PutMapping(value = "/admin/products/{productId}", consumes = {"multipart/form-data"})
     public ResponseEntity<ProduitDTO> updateProduct(
             @RequestPart("produit") @Valid ProduitDTO productDTO,
@@ -58,6 +62,7 @@ public class ProduitController {
         return new ResponseEntity<>(updatedProductDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RESPONSABLE')")
     @Operation(summary = "Supprimer Produit")
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<ProduitDTO> deleteProduct(@PathVariable Long productId){

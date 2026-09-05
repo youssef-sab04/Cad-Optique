@@ -6,10 +6,10 @@ import cad.project.repositries.ProduitRepositry;
 import cad.project.repositries.RoleRepository;
 import cad.project.repositries.UserRepositry;
 import io.restassured.RestAssured;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -31,6 +31,8 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EndToEndFlowTest {
 
     @LocalServerPort
@@ -51,9 +53,14 @@ public class EndToEndFlowTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private final RequestLoggingFilter requestLoggingFilter = new RequestLoggingFilter();
+    private final ResponseLoggingFilter responseLoggingFilter = new ResponseLoggingFilter();
+
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
+    static {
+        postgres.start();
+    }
     @DynamicPropertySource
     static void props(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -69,6 +76,8 @@ public class EndToEndFlowTest {
     @BeforeEach
     void setup() {
         RestAssured.port = port;
+        RestAssured.filters(requestLoggingFilter ,responseLoggingFilter);
+
 
         Role roleResponsable = roleRepository.findByRoleName(AppRole.ROLE_RESPONSABLE)
                 .orElseGet(() -> {
@@ -127,18 +136,9 @@ public class EndToEndFlowTest {
                 .extract().cookie(COOKIE_NAME);
     }
 
-    @Test
-    @DisplayName("Login JWT puis accès à une route /api/admin protégée")
-    void testLoginPuisAccesAdmin() {
-        given()
-                .cookie(COOKIE_NAME, jwtToken)
-                .when()
-                .get("/api/public/salesorders")
-                .then()
-                .statusCode(200);
-    }
 
     @Test
+    @Order(1)
     @DisplayName("Création SalesOrder impacte le stock produit")
     void testCreationSalesOrderImpacteStock() {
         int stockAvant = produitRepositry.findById(produitId).orElseThrow().getQuantity();
@@ -147,14 +147,10 @@ public class EndToEndFlowTest {
         produitDTO.put("id", produitId);
 
         Map<String, Object> itemDTO = new HashMap<>();
-        itemDTO.put("produitDTO", produitDTO);
         itemDTO.put("quantity", 5);
 
         Map<String, Object> salesOrderDTO = new HashMap<>();
-        salesOrderDTO.put("salesOrderItemDTOS", java.util.List.of(itemDTO));
-        salesOrderDTO.put("status", "EN_ATTENTE");
         salesOrderDTO.put("description", "Vente E2E");
-        salesOrderDTO.put("adresse", "Adresse E2E");
 
         Long salesOrderId = given()
                 .cookie(COOKIE_NAME, jwtToken)
@@ -168,28 +164,37 @@ public class EndToEndFlowTest {
 
         given()
                 .cookie(COOKIE_NAME, jwtToken)
+                .contentType(ContentType.JSON)
+                .body(itemDTO)
+                .when()
+                .post("/api/admin/salesorderitems/salesorders/{salesOrderId}/produits/{produitId}", salesOrderId , produitId)
+                .then()
+                .statusCode(201);
+
+        given()
+                .cookie(COOKIE_NAME, jwtToken)
                 .when()
                 .post("/api/admin/ordre/{ordreId}", salesOrderId)
                 .then()
                 .statusCode(200);
 
         int stockApres = produitRepositry.findById(produitId).orElseThrow().getQuantity();
-        org.junit.jupiter.api.Assertions.assertEquals(stockAvant - 5, stockApres);
+        Assertions.assertEquals(stockAvant - 5, stockApres);
     }
 
     @Test
+    @Order(2)
     @DisplayName("confirmDevis crée un SalesOrder")
     void testConfirmDevisCreeSalesOrder() {
+        int stockAvant = produitRepositry.findById(produitId).orElseThrow().getQuantity();
+
         Map<String, Object> produitDTO = new HashMap<>();
         produitDTO.put("id", produitId);
 
         Map<String, Object> itemDTO = new HashMap<>();
-        itemDTO.put("produitDTO", produitDTO);
         itemDTO.put("quantity", 2);
 
         Map<String, Object> devisDTO = new HashMap<>();
-        devisDTO.put("devisItemDTOS", java.util.List.of(itemDTO));
-        devisDTO.put("status", "EN_ATTENTE");
         devisDTO.put("description", "Devis E2E");
 
         Long devisId = given()
@@ -204,10 +209,36 @@ public class EndToEndFlowTest {
 
         given()
                 .cookie(COOKIE_NAME, jwtToken)
+                .contentType(ContentType.JSON)
+                .body(itemDTO)
+                .when()
+                .post("/api/admin/devisitems/devis/{devisId}/produits/{produitId}", devisId , produitId)
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue());
+
+        given()
+                .cookie(COOKIE_NAME, jwtToken)
                 .when()
                 .post("/api/admin/devis/{devisId}/confirm", devisId)
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue());
+
+        int stockApres = produitRepositry.findById(produitId).orElseThrow().getQuantity();
+        Assertions.assertEquals(stockAvant - 2, stockApres);
     }
+
+    @Test
+    @Order(3)
+    @DisplayName("Login JWT puis accès à une route /api/admin protégée")
+    void testLoginPuisAccesAdmin() {
+        given()
+                .cookie(COOKIE_NAME, jwtToken)
+                .when()
+                .get("/api/public/salesorders")
+                .then()
+                .statusCode(200);
+    }
+
 }

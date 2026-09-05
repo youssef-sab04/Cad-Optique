@@ -1,12 +1,15 @@
 package cad.project.security;
 
-import cad.project.model.AppRole;
-import cad.project.model.Role;
-import cad.project.model.User;
+import cad.project.controller.AuthController;
+import cad.project.model.*;
+import cad.project.playload.ClientDTO;
+import cad.project.playload.UserDTO;
+import cad.project.repositries.CommandeRepositry;
+import cad.project.repositries.FournisseurRepositry;
 import cad.project.repositries.RoleRepository;
 import cad.project.repositries.UserRepositry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,6 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 public class SecurityRoleAccessTest {
 
+    private static final String COOKIE_NAME = "cadOptique";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -47,10 +53,22 @@ public class SecurityRoleAccessTest {
     private RoleRepository roleRepository;
 
     @Autowired
+    private FournisseurRepositry fournisseurRepositry;
+
+    @Autowired
+    private CommandeRepositry commandeRepositry;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private AuthController authController;
+
+    @Autowired
+    private WebSecurityConfig webSecurityConfig;
 
     private String adminToken;
     private String responsableToken;
@@ -63,11 +81,6 @@ public class SecurityRoleAccessTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
-
-        registry.add("cloudinary.cloud-name", () -> "test");
-        registry.add("cloudinary.api-key", () -> "test");
-        registry.add("cloudinary.api-secret", () -> "test");
-        registry.add("spring.app.jwtSecret", () -> "testSecretKeyForJwtSigningInTestsOnlyMustBeLongEnough123456");
     }
 
     @BeforeEach
@@ -91,9 +104,30 @@ public class SecurityRoleAccessTest {
 
         adminToken = login("admintest", "Password123");
         responsableToken = login("respotest", "Password123");
+
+        creerCommande();
+    }
+
+    private void creerCommande() {
+        Fournisseur fournisseur = new Fournisseur();
+        fournisseur.setNom("Fournisseur Test");
+        fournisseur.setEmail("fournisseur@test.com");
+        fournisseur.setPhoneNumber("0600000001");
+        fournisseur.setAdresse("Adresse Test");
+        fournisseur = fournisseurRepositry.save(fournisseur);
+
+        Commande commande = new Commande();
+        commande.setDescription("Commande test");
+        commande.setStatus("LIVREE");
+        commande.setTotalprice(100.0);
+        commande.setFournisseur(fournisseur);
+        commandeRepositry.save(commande);
     }
 
     private void createUser(String username, String email, String rawPassword, Role role) {
+        if (userRepositry.existsByUserName(username)) {
+            return;
+        }
         User user = new User();
         user.setNom("Test");
         user.setPrenom("User");
@@ -110,113 +144,99 @@ public class SecurityRoleAccessTest {
 
     private String login(String username, String password) throws Exception {
         Map<String, String> body = new HashMap<>();
-        body.put("userName", username);
+        body.put("username", username);
         body.put("password", password);
 
-        String response = mockMvc.perform(post("/api/auth/signin")
+        MvcResult result = mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn();
 
-        Map<?, ?> json = objectMapper.readValue(response, Map.class);
-        return (String) json.get("token");
+        return result.getResponse().getCookie(COOKIE_NAME).getValue();
+    }
+
+    private Cookie authCookie(String token) {
+        return new Cookie(COOKIE_NAME, token);
     }
 
     @Test
-    void  test(){
-        Assert.assertEquals(1,1);
+    @DisplayName("GET /api/public/commandes accessible par ADMIN et RESPONSABLE")
+    void testRouteCommune() throws Exception {
+        mockMvc.perform(get("/api/public/commandes")
+                        .cookie(authCookie(adminToken)))
+                .andExpect(status().isOk());
 
-    }
-
-    /*
-    // ===== Endpoints communs (accessibles ADMIN + RESPONSABLE) =====
-
-    @Test
-    @DisplayName("GET /api/public/clients accessible par ADMIN")
-    void testPublicClients_admin() throws Exception {
-        mockMvc.perform(get("/api/public/clients")
-                        .header("Authorization", "Bearer " + adminToken))
+        mockMvc.perform(get("/api/public/commandes")
+                        .cookie(authCookie(responsableToken)))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("GET /api/public/clients accessible par RESPONSABLE")
-    void testPublicClients_responsable() throws Exception {
-        mockMvc.perform(get("/api/public/clients")
-                        .header("Authorization", "Bearer " + responsableToken))
-                .andExpect(status().isOk());
+    @DisplayName("POST /api/admin/client accessible par RESPONSABLE")
+    void testAddClient_responsable() throws Exception {
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setNom("Test");
+        clientDTO.setPrenom("Client");
+        clientDTO.setEmail("client.test@test.com");
+        clientDTO.setPhoneNumber("0611111111");
+
+        mockMvc.perform(post("/api/admin/client")
+                        .cookie(authCookie(responsableToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(clientDTO)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    @DisplayName("GET /api/public/produits accessible par ADMIN et RESPONSABLE")
-    void testPublicProduits_communAuxDeuxRoles() throws Exception {
-        mockMvc.perform(get("/api/public/products")
-                        .header("Authorization", "Bearer " + adminToken))
-                .andExpect(status().isOk());
+    @DisplayName("POST /api/admin/client refusé pour ADMIN")
+    void testAddClient_refuseAdmin() throws Exception {
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setNom("Test");
+        clientDTO.setPrenom("Client");
+        clientDTO.setEmail("client.test2@test.com");
+        clientDTO.setPhoneNumber("0611111112");
 
-        mockMvc.perform(get("/api/public/products")
-                        .header("Authorization", "Bearer " + responsableToken))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("GET /api/public/examens accessible par ADMIN et RESPONSABLE")
-    void testPublicExamens_communAuxDeuxRoles() throws Exception {
-        mockMvc.perform(get("/api/public/examens")
-                        .header("Authorization", "Bearer " + adminToken))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/api/public/examens")
-                        .header("Authorization", "Bearer " + responsableToken))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Endpoint commun sans token retourne 401/403")
-    void testEndpointCommun_sansToken() throws Exception {
-        mockMvc.perform(get("/api/public/clients"))
-                .andExpect(status().is4xxClientError());
-    }
-
-    // ===== Endpoints réservés au RESPONSABLE =====
-
-    @Test
-    @DisplayName("Endpoint réservé RESPONSABLE accessible par RESPONSABLE")
-    void testEndpointResponsable_accesResponsable() throws Exception {
-        // TODO remplacer par l'endpoint réel réservé RESPONSABLE
-        mockMvc.perform(get("/api/public/clients")
-                        .header("Authorization", "Bearer " + responsableToken))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Endpoint réservé RESPONSABLE refusé pour ADMIN")
-    void testEndpointResponsable_refuseAdmin() throws Exception {
-        // TODO remplacer par l'endpoint réel réservé RESPONSABLE
-        mockMvc.perform(get("/api/public/clients")
-                        .header("Authorization", "Bearer " + adminToken))
+        mockMvc.perform(post("/api/admin/client")
+                        .cookie(authCookie(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(clientDTO)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("Endpoint réservé RESPONSABLE #2 accessible par RESPONSABLE")
-    void testEndpointResponsable2_accesResponsable() throws Exception {
-        // TODO
+    @DisplayName("POST /api/auth/admin/add_responsable refusé pour RESPONSABLE")
+    void testAddResponsable_refuseResponsable() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setPassword("afdjktuwr9");
+        userDTO.setNom("Malika");
+        userDTO.setPrenom("THiaw");
+
+        mockMvc.perform(post("/api/auth/admin/add_responsable")
+                        .cookie(authCookie(responsableToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("Endpoint réservé RESPONSABLE #2 refusé pour ADMIN")
-    void testEndpointResponsable2_refuseAdmin() throws Exception {
-        // TODO
+    @DisplayName("POST /api/auth/admin/add_responsable accepté pour ADMIN")
+    void testAddResponsable_admin() throws Exception {
+        String json = """
+                {
+                  "nom": "Malika",
+                  "prenom": "THiaw",
+                  "userName": "malika.thiaw",
+                  "email": "malika.thiaw@test.com",
+                  "cin": "CD123456",
+                  "password": "afdjktuwr9"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/admin/add_responsable")
+                        .cookie(authCookie(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated());
     }
-
-    @Test
-    @DisplayName("Endpoint réservé RESPONSABLE #3 refusé sans authentification")
-    void testEndpointResponsable3_refuseSansAuth() throws Exception {
-        // TODO
-    }
-
-
-     */
 }

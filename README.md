@@ -83,6 +83,3 @@ Cad-Optique/
 └── frontend/   # Application React
 ```
 
-## Périmètre
-
-Les modules AMO/CNOPS (mutuelle) et Paiements/Remboursements figurent dans le cahier des charges initial mais sont hors périmètre de la version actuelle ; l'extraction OCR des ordonnances, elle, fait partie des objectifs et a été implémentée.

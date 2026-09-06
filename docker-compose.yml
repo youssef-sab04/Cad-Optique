@@ -1,0 +1,55 @@
+services:
+  postgres:
+    container_name: postgres-cadoptique
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cadoptique
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - cadoptique
+    restart: unless-stopped
+
+  cadoptique-backend:
+    container_name: cadoptique-backend
+    image: cadoptique-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cadoptique
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - 8080:8080
+    networks:
+      - cadoptique
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  cadoptique-frontend:
+    container_name: cadoptique-frontend
+    image: cadoptique-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:80
+    networks:
+      - cadoptique
+    depends_on:
+      - cadoptique-backend
+    restart: unless-stopped
+
+networks:
+  cadoptique:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local

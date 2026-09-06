@@ -14,4 +14,6 @@ public interface SalesOrderService {
     SalesOrderResponse getAllSalesOrders(Integer pageNumber, Integer pageSize, String sortOrder);
 
     SalesOrderDTO ValiderOrdre(Long ordreId);
+
+    SalesOrderDTO cancelOrder(Long ordreIdId);
 }

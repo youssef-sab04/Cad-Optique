@@ -3,10 +3,7 @@ package cad.project.service;
 import cad.project.exceptions.APIException;
 import cad.project.exceptions.ResourceNotFoundException;
 import cad.project.model.*;
-import cad.project.playload.ClientDTO;
-import cad.project.playload.CommandeDTO;
-import cad.project.playload.SalesOrderDTO;
-import cad.project.playload.SalesOrderResponse;
+import cad.project.playload.*;
 import cad.project.repositries.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +68,8 @@ public class SalesOrderServiceImp implements SalesOrderService {
 
         return modelMapper.map(salesOrderSaved, SalesOrderDTO.class);
     }
+
+
 
     @Override
     public SalesOrderDTO deleteSalesOrder(Long salesOrderId) {
@@ -168,12 +167,20 @@ public class SalesOrderServiceImp implements SalesOrderService {
         return modelMapper.map(salesOrder, SalesOrderDTO.class);
     }
 
+    @Override
+    public SalesOrderDTO cancelOrder(Long ordreId) {
 
+        SalesOrder salesOrder = saleOrderRepositry.findById(ordreId)
+                .orElseThrow(() -> new ResourceNotFoundException("SalesOrder", "ordreId", ordreId));
 
+        if ("Valide".equals(salesOrder.getStatus())) {
+            throw new APIException("Un ordre valide ne peut pas etre annule");
+        }
 
+        salesOrder.setStatus("Annulee");
+        SalesOrder salesOrderSaved = saleOrderRepositry.save(salesOrder);
+        return modelMapper.map(salesOrderSaved, SalesOrderDTO.class);
+    }
 
 
 }
-
-
-

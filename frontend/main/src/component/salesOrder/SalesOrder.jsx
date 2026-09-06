@@ -8,7 +8,7 @@ import Paginations from "../shared/Paginations";
 import { fetchSalesOrders  /*, deleteSalesOrder */ } from "../../store/reducers/actions";
 import toast from "react-hot-toast";
 import { FaExclamationTriangle } from "react-icons/fa";
-import { deleteSaleOrder, deleteSaleOrderItem, confirmSaleOrder, downloadSalesOrderPdf } from "../../store/reducers/actions";
+import { deleteSaleOrder, deleteSaleOrderItem, confirmSaleOrder, cancelSaleOrder, downloadSalesOrderPdf } from "../../store/reducers/actions";
 import SalesOrderItemModal from "./SalesOrderItemModal";
 import ConfirmModal from "../shared/ConfirmModal";
 
@@ -31,7 +31,10 @@ const SalesOrder = () => {
     const [deleteIdOI, setDeleteIdOI] = useState(null);
 
     const [confirmModal, setconfirmModal] = useState(false);
-const [confirmId, setConfirmId] = useState(null);
+    const [confirmId, setConfirmId] = useState(null);
+
+    const [cancelModal, setCancelModal] = useState(false);
+    const [cancelId, setCancelId] = useState(null);
 
 
 
@@ -76,6 +79,15 @@ const [confirmId, setConfirmId] = useState(null);
         dispatch(confirmSaleOrder(confirmId, toast, setconfirmModal, setBtnLoader));
     };
 
+    const handleCancelClick = (id) => {
+        setCancelId(id);
+        setCancelModal(true);
+    };
+
+    const handleCancelOrder = () => {
+        dispatch(cancelSaleOrder(cancelId, toast, setCancelModal, setBtnLoader));
+    };
+
 
 
 
@@ -109,6 +121,7 @@ const [confirmId, setConfirmId] = useState(null);
                         onDelete={handleDelete}
                         onDeleteOI={handleDeleteOI}
                         onConfirm={confirmOrder}
+                        onCancel={handleCancelClick}
                         onReceipt={handleReceipt}
                     />
                     <div className="flex justify-center pt-6">
@@ -143,6 +156,14 @@ const [confirmId, setConfirmId] = useState(null);
                 onConfirmHandler={handleConfirmOrder}
                 loader={btnLoader}
 
+            />
+
+            <ConfirmModal
+                open={cancelModal}
+                setOpen={setCancelModal}
+                title="Annuler cette vente ?"
+                onConfirmHandler={handleCancelOrder}
+                loader={btnLoader}
             />
 
 

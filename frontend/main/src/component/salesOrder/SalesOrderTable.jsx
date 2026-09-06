@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { FiChevronDown, FiChevronUp, FiPackage, FiPrinter, FiTrash2 } from "react-icons/fi";
+import { FiChevronDown, FiChevronUp, FiPrinter, FiTrash2 } from "react-icons/fi";
 import { fetchSalesOrderItemsID, updateSaleOrderItemQTE } from "../../store/reducers/actions";
 import { useDispatch } from "react-redux";
 import Loader from "../shared/Loader";
 import toast from "react-hot-toast";
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import React from "react";
 
 const statusStyles = {
@@ -16,7 +17,7 @@ const statusStyles = {
 
 
 
-const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfirm, onReceipt }) => {
+const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfirm, onCancel, onReceipt }) => {
 
     const dispatch = useDispatch();
 
@@ -46,6 +47,8 @@ const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfi
     const updateQte = (id, qte) => {
         dispatch(updateSaleOrderItemQTE(id, qte, toast, setSOI, expandedId));
     };
+
+    const isLocked = (status) => status === "Valide" || status === "Annulee";
 
     return (
         <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
@@ -87,7 +90,7 @@ const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfi
                                     <div className="flex justify-end items-center gap-3">
                                         <button
                                             onClick={(e) => { e.stopPropagation(); onAddItem(order.id); }}
-                                            disabled={order.status === "Valide"}
+                                            disabled={isLocked(order.status)}
                                             className="w-6 h-6 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
                                             title="Ajouter un produit"
                                         >
@@ -110,12 +113,20 @@ const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfi
 
                                         <button
                                             onClick={(e) => { e.stopPropagation(); onConfirm(order.id); }}
-                                            disabled={order.status === "Valide"}
+                                            disabled={isLocked(order.status)}
                                             className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 text-green-600 hover:bg-green-100"
                                             title="Valider la commande"
 
                                         >
                                             <CheckCircleIcon sx={{ fontSize: 16 }} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onCancel(order.id); }}
+                                            disabled={isLocked(order.status)}
+                                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                                            title="Annuler la vente"
+                                        >
+                                            <CancelIcon sx={{ fontSize: 16 }} />
                                         </button>
                                         {expandedId === order.id ? <FiChevronUp size={16} className="text-slate-400" /> : <FiChevronDown size={16} className="text-slate-400" />}
                                     </div>
@@ -148,12 +159,12 @@ const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfi
                                                                 <div className="flex items-center gap-2">
                                                                     <button
                                                                         onClick={() => { updateQte(item.id, -1) }}
-                                                                        disabled={order.status === "Valide"}
+                                                                        disabled={isLocked(order.status)}
                                                                         className="w-6 h-6 flex items-center justify-center rounded bg-slate-200 hover:bg-slate-300 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">-</button>
                                                                     <span>{item.quantity}</span>
                                                                     <button
                                                                         onClick={() => { updateQte(item.id, 1) }}
-                                                                        disabled={order.status === "Valide"}
+                                                                        disabled={isLocked(order.status)}
                                                                         className="w-6 h-6 flex items-center justify-center rounded bg-slate-200 hover:bg-slate-300 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">+</button>
                                                                 </div>
                                                             </td>
@@ -165,7 +176,7 @@ const SalesOrderTable = ({ salesOrders, onAddItem, onDelete, onDeleteOI, onConfi
                                                                 <div className="flex justify-end items-center gap-3">
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); onDeleteOI(item.id) }}
-                                                                        disabled={order.status === "Valide"}
+                                                                        disabled={isLocked(order.status)}
                                                                         className="text-red-400 hover:text-red-800 disabled:opacity-40 disabled:cursor-not-allowed"
                                                                     >
                                                                         <FiTrash2 size={16} />

@@ -2,6 +2,7 @@ package cad.project.controller;
 
 import cad.project.config.AppConstants;
 import cad.project.playload.CommandeDTO;
+import cad.project.playload.DevisDTO;
 import cad.project.playload.SalesOrderDTO;
 import cad.project.playload.SalesOrderResponse;
 import cad.project.service.SalesOrderService;
@@ -80,6 +81,12 @@ public class SalesOrderController {
     @PostMapping("/admin/ordre/{ordreId}")
     public ResponseEntity<SalesOrderDTO> validerOrdre(@PathVariable Long ordreId){
         SalesOrderDTO salesOrderDTO = salesOrderService.ValiderOrdre(ordreId);
+        return new ResponseEntity<>(salesOrderDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/admin/ordre/{ordreId}/cancel")
+    public ResponseEntity<SalesOrderDTO> cancelSales(@PathVariable Long ordreId){
+        SalesOrderDTO salesOrderDTO = salesOrderService.cancelOrder(ordreId);
         return new ResponseEntity<>(salesOrderDTO, HttpStatus.OK);
     }
 

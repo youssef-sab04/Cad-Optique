@@ -748,6 +748,21 @@ export const confirmSaleOrder = (id, toast, setOpen, setBtnLoader) => async (dis
     }
 };
 
+export const cancelSaleOrder = (id, toast, setOpen, setBtnLoader) => async (dispatch) => {
+    try {
+        setBtnLoader(true);
+        const { data } = await api.post(`/admin/ordre/${id}/cancel`);
+        dispatch({ type: "CANCEL_OR", payload: data });
+        toast.success("Ordre annulé");
+        setOpen(false);
+        dispatch(fetchSalesOrders());
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Erreur lors de l'annulation");
+    } finally {
+        setBtnLoader(false);
+    }
+};
+
 //   DEVIS
 
 export const addDevis = (id, dataS, toast, reset, setOpen, setBtnLoader) => async (dispatch) => {

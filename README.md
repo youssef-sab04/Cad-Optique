@@ -6,7 +6,7 @@ Application full-stack de gestion interne pour un magasin d'optique au Maroc —
 
 ## Contexte
 
-Projet de fin d'études (PFE) réalisé à l'ENSA Fès, en collaboration avec **CAD Digital Agency** (Fès). Le magasin d'optique est un client potentiel de l'agence ; l'application est pensée pour un usage en production réelle, pas uniquement comme livrable académique.
+Projet  (PFA) réalisé à l'ENSA Fès, en collaboration avec **CAD Digital Agency** (Fès). Le magasin d'optique est un client potentiel de l'agence ; l'application est pensée pour un usage en production réelle, pas uniquement comme livrable académique.
 
 ## Stack technique
 
@@ -40,7 +40,6 @@ Projet de fin d'études (PFE) réalisé à l'ENSA Fès, en collaboration avec **
 - **Devis** : création, conversion en bon de vente (SalesOrder)
 - **Ventes (SalesOrder)** : gestion des lignes, calcul TVA/prix, statuts
 - **Mouvements de stock** : traçabilité des entrées/sorties (déclenchées automatiquement par les commandes et ventes)
-- **Paiements / Remboursements** : suivi financier
 
 ### Autres
 - **Génération de PDF** : devis et reçus de vente (mise en page A4)

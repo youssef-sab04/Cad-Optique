@@ -36,7 +36,7 @@ services:
     container_name: cadoptique-frontend
     image: cadoptique-frontend
     build:
-      context: ./frontend
+      context: ./frontend/main
       dockerfile: Dockerfile
     ports:
       - 3000:80
